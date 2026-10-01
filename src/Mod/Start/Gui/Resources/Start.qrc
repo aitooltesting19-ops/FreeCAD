@@ -6,5 +6,6 @@
         <file>thumbnails/Theme_thumbnail_classic.png</file>
         <file>thumbnails/Theme_thumbnail_light.png</file>
         <file>thumbnails/Theme_thumbnail_dark.png</file>
+        <file>thumbnails/Theme_thumbnail_modern.png</file>
     </qresource>
 </RCC>

@@ -44,6 +44,9 @@ class GuiExport CommandCompleter: public QCompleter
 public:
     explicit CommandCompleter(QLineEdit* edit, QObject* parent = nullptr);
 
+    /// Also match the typed text against the tool tips of the commands
+    void setSearchToolTips(bool on);
+
 Q_SIGNALS:
     /// Triggered when a command is selected in the completer
     void commandActivated(const QByteArray& name);

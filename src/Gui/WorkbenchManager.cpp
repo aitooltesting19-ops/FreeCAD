@@ -28,6 +28,7 @@
 #include "DockWindowManager.h"
 #include "MenuManager.h"
 #include "ToolBarManager.h"
+#include "ModernUI/CommandPanel.h"
 
 using namespace Gui;
 
@@ -58,6 +59,7 @@ WorkbenchManager::~WorkbenchManager()
 
     MenuManager::destruct();
     ToolBarManager::destruct();
+    CommandPanelManager::destruct();
     // ToolBoxManager::destruct();
     DockWindowManager::destruct();
 }

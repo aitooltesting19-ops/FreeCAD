@@ -35,5 +35,15 @@
       <tag>background</tag>
       <tag>dark</tag>
     </preferencepack>
+	<preferencepack>
+	  <name>FreeCAD Modern</name>
+      <type>Theme</type>
+      <description>Light engineering theme with blue accents, a modern model tree, the bottom command panel and an engineering grid workspace.</description>
+      <version>1.0.0</version>
+      <tag>built-in</tag>
+      <tag>background</tag>
+      <tag>light</tag>
+      <tag>modern</tag>
+    </preferencepack>
   </content>
 </package>

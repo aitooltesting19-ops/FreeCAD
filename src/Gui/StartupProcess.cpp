@@ -56,6 +56,7 @@
 #include "Language/Translator.h"
 #include "Dialogs/DlgVersionMigrator.h"
 #include "FreeCADStyle.h"
+#include "ModernUI/ModernUI.h"
 
 #include <App/Application.h>
 #include <App/ApplicationDirectories.h>
@@ -130,7 +131,17 @@ void StartupProcess::execute()
     setImagePaths();
     registerEventType();
     setThemePaths();
+    setModernIcons();
     setupFileDialog();
+}
+
+void StartupProcess::setModernIcons()
+{
+    // Must happen before any icon is loaded, so that the modern variants take precedence
+    ParameterGrp::handle hGrp = ModernUI::parameters();
+    if (hGrp->GetBool("Enabled", true) && hGrp->GetBool("ModernIcons", true)) {
+        ModernUI::installModernIcons();
+    }
 }
 
 void StartupProcess::setLibraryPath()
@@ -235,10 +246,16 @@ void StartupPostProcess::execute()
     checkOpenGL();
     loadOpenInventor();
     setBranding();
+    setupModernUI();
     showMainWindow();
     activateWorkbench();
     checkParameters();
     checkVersionMigration();
+}
+
+void StartupPostProcess::setupModernUI()
+{
+    ModernUI::setupMainWindow();
 }
 
 void StartupPostProcess::setWindowTitle()

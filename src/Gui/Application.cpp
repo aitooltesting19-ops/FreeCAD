@@ -1013,6 +1013,7 @@ void Application::createStandardOperations()
     Gui::CreateFeatCommands();
     Gui::CreateMacroCommands();
     Gui::CreateViewStdCommands();
+    Gui::CreateModernUICommands();
     Gui::CreateWindowStdCommands();
     Gui::CreateStructureCommands();
     Gui::CreateTestCommands();
@@ -2701,7 +2702,7 @@ void Application::setStyleSheet(const QString& qssFile, bool tiledBackground)
             mdi->setBackground(QBrush(Qt::NoBrush));
             QTextStream str(&f);
 
-            QString styleSheetContent = replaceVariablesInQss(str.readAll());
+            QString styleSheetContent = replaceVariablesInQss(resolveQssImports(str.readAll()));
 
             qApp->setStyleSheet(defaultStyleSheet + QStringLiteral("\n") + styleSheetContent);
 
@@ -2766,6 +2767,42 @@ void Application::reloadStyleSheet()
 
     setStyleSheet(qssFile, tiledBackground);
     OverlayManager::instance()->refresh(nullptr, true);
+}
+
+QString Application::resolveQssImports(const QString& qssText, int depth)
+{
+    // Lines of the form  @import "Other.qss";  are replaced by the content of that file, which
+    // is searched like any style sheet. This lets a theme extend another one by overriding only
+    // what it changes, e.g. "FreeCAD Modern.qss" builds on "FreeCAD.qss".
+    static const QRegularExpression importRegex(
+        QString::fromLatin1(R"(^[ \t]*@import\s+"([^"]+)"\s*;[ \t]*$)"),
+        QRegularExpression::MultilineOption
+    );
+    constexpr int maxDepth = 4;
+    if (depth > maxDepth || !qssText.contains(QLatin1String("@import"))) {
+        return qssText;
+    }
+
+    QString result;
+    qsizetype last = 0;
+    auto it = importRegex.globalMatch(qssText);
+    while (it.hasNext()) {
+        const QRegularExpressionMatch match = it.next();
+        result += qssText.mid(last, match.capturedStart() - last);
+        last = match.capturedEnd();
+
+        const QString name = match.captured(1);
+        QFile file(QFile::exists(name) ? name : QLatin1String("qss:") + name);
+        if (file.open(QFile::ReadOnly | QFile::Text)) {
+            QTextStream in(&file);
+            result += resolveQssImports(in.readAll(), depth + 1);
+        }
+        else {
+            Base::Console().warning("Style sheet '%s' imported but not found\n", name.toStdString());
+        }
+    }
+    result += qssText.mid(last);
+    return result;
 }
 
 QString Application::replaceVariablesInQss(const QString& qssText)

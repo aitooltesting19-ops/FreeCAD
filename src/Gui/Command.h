@@ -243,6 +243,7 @@ void CreateDocCommands();
 void CreateFeatCommands();
 void CreateMacroCommands();
 void CreateViewStdCommands();
+void CreateModernUICommands();
 void CreateWindowStdCommands();
 void CreateStructureCommands();
 void CreateTestCommands();

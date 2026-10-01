@@ -87,6 +87,7 @@ void View3DSettings::applySettings()
     OnChange(*hGrp, "BackgroundColor3");
     OnChange(*hGrp, "BackgroundColor4");
     OnChange(*hGrp, "UseBackgroundColorMid");
+    OnChange(*hGrp, "WorkspaceGrid");
     OnChange(*hGrp, "ShowFPS");
     OnChange(*hGrp, "ShowNaviCube");
     OnChange(*hGrp, "AxisXColor");
@@ -404,6 +405,31 @@ void View3DSettings::OnChange(ParameterGrp::SubjectType& rCaller, ParameterGrp::
         }
         for (auto _viewer : _viewers) {
             _viewer->setGradientBackground(background);
+        }
+    }
+    else if (strcmp(Reason, "WorkspaceGrid") == 0 || strcmp(Reason, "WorkspaceGridMinorColor") == 0
+             || strcmp(Reason, "WorkspaceGridMajorColor") == 0
+             || strcmp(Reason, "WorkspaceGridOpacity") == 0
+             || strcmp(Reason, "WorkspaceGridSpacing") == 0
+             || strcmp(Reason, "WorkspaceGridMajorEvery") == 0) {
+        // Visual engineering grid behind the scene. It is independent of any snapping grid.
+        const auto toColor = [](unsigned long packed) {
+            float transparency {};
+            SbColor color;
+            color.setPackedValue(static_cast<uint32_t>(packed), transparency);
+            return color;
+        };
+        const bool show = rGrp.GetBool("WorkspaceGrid", false);
+        const SbColor minorColor = toColor(rGrp.GetUnsigned("WorkspaceGridMinorColor", 0xD8EAF8FF));
+        const SbColor majorColor = toColor(rGrp.GetUnsigned("WorkspaceGridMajorColor", 0xC3DDF1FF));
+        const long opacity = rGrp.GetInt("WorkspaceGridOpacity", 100);
+        const long spacing = rGrp.GetInt("WorkspaceGridSpacing", 14);
+        const long majorEvery = rGrp.GetInt("WorkspaceGridMajorEvery", 5);
+        for (auto _viewer : _viewers) {
+            _viewer->setBackgroundGridColors(minorColor, majorColor);
+            _viewer->setBackgroundGridOpacity(float(opacity) / 100.0F);
+            _viewer->setBackgroundGridSpacing(float(spacing), int(majorEvery));
+            _viewer->setBackgroundGrid(show);
         }
     }
     else if (strcmp(Reason, "ShowFPS") == 0) {

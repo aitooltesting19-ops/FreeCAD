@@ -31,6 +31,7 @@
 #include "Action.h"
 #include "Application.h"
 #include "Command.h"
+#include "ModernUI/CommandPanel.h"
 #include "Control.h"
 #include "DockWindowManager.h"
 #include "MainWindow.h"
@@ -465,6 +466,9 @@ bool Workbench::activate()
     DockWindowManager::instance()->setup(dw);
     delete dw;
 
+    std::unique_ptr<ToolBarItem> cp(setupCommandPanel());
+    CommandPanelManager::instance()->setup(cp.get());
+
     MenuItem* mb = setupMenuBar();
     addPermanentMenuItems(mb);
     WorkbenchManipulator::changeMenuBar(mb);
@@ -476,9 +480,15 @@ bool Workbench::activate()
     return true;
 }
 
+ToolBarItem* Workbench::setupCommandPanel() const
+{
+    return new ToolBarItem;
+}
+
 void Workbench::retranslate() const
 {
     ToolBarManager::getInstance()->retranslate();
+    CommandPanelManager::instance()->retranslate();
     // ToolBoxManager::getInstance()->retranslate();
     DockWindowManager::instance()->retranslate();
     MenuManager::getInstance()->retranslate();
@@ -595,6 +605,7 @@ std::list<std::string> Workbench::listCommandbars() const
     qApp->translate("Workbench", "&Stereo");
     qApp->translate("Workbench", "&Zoom");
     qApp->translate("Workbench", "V&isibility");
+    qApp->translate("Workbench", "Workspace &Appearance");
     qApp->translate("Workbench", "&View");
     qApp->translate("Workbench", "&Tools");
     qApp->translate("Workbench", "&Macro");
@@ -734,11 +745,17 @@ MenuItem* StdWorkbench::setupMenuBar() const
           << "Separator" << "Std_ToggleSelectability";
 
     // View
+    // Workspace background presets and engineering grid
+    auto workspace = new MenuItem;
+    workspace->setCommand("Workspace &Appearance");
+    *workspace << "Std_WorkspacePreset" << "Std_WorkspaceGrid" << "Separator"
+               << "Std_WorkspaceAppearance";
+
     auto view = new MenuItem(menuBar);
     view->setCommand("&View");
     *view << "Std_ViewCreate" << "Std_OrthographicCamera" << "Std_PerspectiveCamera"
           << "Std_MainFullscreen" << "Separator" << stdviews << "Std_FreezeViews" << "Std_DrawStyle"
-          << "Std_SelBoundingBox"
+          << "Std_SelBoundingBox" << workspace
           << "Separator" << view3d << zoom << "Std_ViewDockUndockFullscreen" << "Std_AxisCross"
           << "Std_ToggleClipPlane"
           << "Std_TextureMapping"
@@ -769,7 +786,9 @@ MenuItem* StdWorkbench::setupMenuBar() const
               << "Separator";
     }
 #endif
-    *tool << "Std_Measure"
+    *tool << "Std_CommandSearch"
+          << "Separator"
+          << "Std_Measure"
           << "Std_ClarifySelection"
           << "Std_UnitsCalculator"
           << "Separator"
@@ -1107,6 +1126,7 @@ PythonBaseWorkbench::~PythonBaseWorkbench()
     delete _contextMenu;
     delete _toolBar;
     delete _commandBar;
+    delete _commandPanel;
     if (_workbenchPy) {
         Base::PyGILStateLocker lock;
         _workbenchPy->setInvalid();
@@ -1144,6 +1164,11 @@ ToolBarItem* PythonBaseWorkbench::setupCommandBars() const
 DockWindowItems* PythonBaseWorkbench::setupDockWindows() const
 {
     return new DockWindowItems();
+}
+
+ToolBarItem* PythonBaseWorkbench::setupCommandPanel() const
+{
+    return _commandPanel ? _commandPanel->copy() : new ToolBarItem;
 }
 
 void PythonBaseWorkbench::setupContextMenu(const char* recipient, MenuItem* item) const
@@ -1280,6 +1305,31 @@ void PythonBaseWorkbench::removeCommandbar(const std::string& bar) const
     }
 }
 
+void PythonBaseWorkbench::appendCommandPanel(
+    const std::string& tab,
+    const std::list<std::string>& items
+) const
+{
+    ToolBarItem* item = _commandPanel->findItem(tab);
+    if (!item) {
+        item = new ToolBarItem(_commandPanel);
+        item->setCommand(tab);
+    }
+
+    for (const auto& it : items) {
+        *item << it;
+    }
+}
+
+void PythonBaseWorkbench::removeCommandPanel(const std::string& tab) const
+{
+    ToolBarItem* item = _commandPanel->findItem(tab);
+    if (item) {
+        _commandPanel->removeItem(item);
+        delete item;
+    }
+}
+
 // -----------------------------------------------------------------------
 
 TYPESYSTEM_SOURCE(Gui::PythonBlankWorkbench, Gui::PythonBaseWorkbench)
@@ -1290,6 +1340,7 @@ PythonBlankWorkbench::PythonBlankWorkbench()
     _contextMenu = new MenuItem;
     _toolBar = new ToolBarItem;
     _commandBar = new ToolBarItem;
+    _commandPanel = new ToolBarItem;
 }
 
 PythonBlankWorkbench::~PythonBlankWorkbench() = default;
@@ -1305,6 +1356,7 @@ PythonWorkbench::PythonWorkbench()
     _contextMenu = new MenuItem;
     _toolBar = wb.setupToolBars();
     _commandBar = new ToolBarItem;
+    _commandPanel = new ToolBarItem;
 }
 
 PythonWorkbench::~PythonWorkbench() = default;

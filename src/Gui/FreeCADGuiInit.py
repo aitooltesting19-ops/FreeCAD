@@ -104,6 +104,13 @@ class Workbench:
     def listCommandbars(self):
         return self.__Workbench__.listCommandbars()
 
+    def appendCommandPanel(self, tab, cmds):
+        """Add commands to a tab of the bottom command panel (created if needed)."""
+        self.__Workbench__.appendCommandPanel(tab, cmds)
+
+    def removeCommandPanel(self, tab):
+        self.__Workbench__.removeCommandPanel(tab)
+
     def appendMenu(self, name, cmds):
         self.__Workbench__.appendMenu(name, cmds)
 

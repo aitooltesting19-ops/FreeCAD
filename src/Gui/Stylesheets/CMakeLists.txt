@@ -1,12 +1,14 @@
 
 SET(Stylesheets_Files
     "FreeCAD.qss"
+    "FreeCAD Modern.qss"
     "defaults.qss"
 )
 
 SET(Parameters_Files
     "parameters/FreeCAD Dark.yaml"
     "parameters/FreeCAD Light.yaml"
+    "parameters/FreeCAD Modern.yaml"
 )
 
 SET(Overlay_Stylesheets_Files
@@ -26,6 +28,11 @@ FILE(GLOB Images_Files2 RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
 
 SOURCE_GROUP("images_classic" FILES ${Images_Files2})
 
+FILE(GLOB Images_Modern RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/images_modern/*.svg")
+
+SOURCE_GROUP("images_modern" FILES ${Images_Modern})
+
 FILE(GLOB Overlay_icons RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/overlay/icons/*.svg")
 
@@ -33,7 +40,7 @@ SOURCE_GROUP("overlay_icons" FILES ${Overlay_icons})
 
 
 ADD_CUSTOM_TARGET(Stylesheets_data ALL
-    SOURCES ${Stylesheets_Files} ${Parameters_Files} ${Images_Files} ${Images_Files2} ${Overlay_Stylesheets_Files} ${Overlay_icons}
+    SOURCES ${Stylesheets_Files} ${Parameters_Files} ${Images_Files} ${Images_Files2} ${Images_Modern} ${Overlay_Stylesheets_Files} ${Overlay_icons}
 )
 
 fc_copy_sources(Stylesheets_data "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/Gui/Stylesheets"
@@ -41,6 +48,7 @@ fc_copy_sources(Stylesheets_data "${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_DATADIR}/G
                                   ${Parameters_Files}
                                   ${Images_Files}
                                   ${Images_Files2}
+                                  ${Images_Modern}
                                   ${Overlay_Stylesheets_Files}
                                   ${Overlay_icons})
 
@@ -79,4 +87,10 @@ INSTALL(
          ${Images_Files2}
     DESTINATION
         ${CMAKE_INSTALL_DATADIR}/Gui/Stylesheets/images_classic
+)
+INSTALL(
+    FILES
+         ${Images_Modern}
+    DESTINATION
+        ${CMAKE_INSTALL_DATADIR}/Gui/Stylesheets/images_modern
 )

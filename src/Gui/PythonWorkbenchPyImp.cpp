@@ -321,6 +321,52 @@ PyObject* PythonWorkbenchPy::removeCommandbar(PyObject* args)
     PY_CATCH;
 }
 
+/** Appends commands to a tab of the bottom command panel */
+PyObject* PythonWorkbenchPy::appendCommandPanel(PyObject* args)
+{
+    PY_TRY
+    {
+        PyObject* pObject;
+        char* psTab;
+        if (!PyArg_ParseTuple(args, "sO", &psTab, &pObject)) {
+            return nullptr;
+        }
+        if (!PyList_Check(pObject)) {
+            PyErr_SetString(PyExc_AssertionError, "Expected a list as second argument");
+            return nullptr;
+        }
+
+        std::list<std::string> items;
+        int nSize = PyList_Size(pObject);
+        for (int i = 0; i < nSize; ++i) {
+            PyObject* item = PyList_GetItem(pObject, i);
+            if (PyUnicode_Check(item)) {
+                items.emplace_back(PyUnicode_AsUTF8(item));
+            }
+        }
+
+        getPythonBaseWorkbenchPtr()->appendCommandPanel(psTab, items);
+        Py_Return;
+    }
+    PY_CATCH;
+}
+
+/** Removes a tab from the bottom command panel */
+PyObject* PythonWorkbenchPy::removeCommandPanel(PyObject* args)
+{
+    PY_TRY
+    {
+        char* psTab;
+        if (!PyArg_ParseTuple(args, "s", &psTab)) {
+            return nullptr;
+        }
+
+        getPythonBaseWorkbenchPtr()->removeCommandPanel(psTab);
+        Py_Return;
+    }
+    PY_CATCH;
+}
+
 PyObject* PythonWorkbenchPy::getCustomAttributes(const char*) const
 {
     return nullptr;

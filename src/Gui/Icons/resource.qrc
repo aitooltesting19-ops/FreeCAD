@@ -323,6 +323,12 @@
         <file>zoom-in.svg</file>
         <file>zoom-out.svg</file>
         <file>zoom-selection.svg</file>
+        <file>ModernUI_ChevronDown.svg</file>
+        <file>ModernUI_ChevronUp.svg</file>
+        <file>ModernUI_Filter.svg</file>
+        <file>ModernUI_Grid.svg</file>
+        <file>ModernUI_Search.svg</file>
+        <file>ModernUI_Workspace.svg</file>
     </qresource>
     <qresource prefix="/icons/FreeCAD-default">
         <file>index.theme</file>
@@ -451,5 +457,58 @@
     <qresource prefix="/doc">
         <file alias="CONTRIBUTORS">../../Doc/CONTRIBUTORS</file>
         <file alias="PRIVACY_POLICY">../../../PRIVACY_POLICY.md</file>
+    </qresource>
+    <qresource prefix="/icons/modern">
+        <file alias="Draft_2DShapeView.svg">modern/Draft_2DShapeView.svg</file>
+        <file alias="Draft_AddConstruction.svg">modern/Draft_AddConstruction.svg</file>
+        <file alias="Draft_AddNamedGroup.svg">modern/Draft_AddNamedGroup.svg</file>
+        <file alias="Draft_AddToLayer.svg">modern/Draft_AddToLayer.svg</file>
+        <file alias="Draft_Annotation_Style.svg">modern/Draft_Annotation_Style.svg</file>
+        <file alias="Draft_Apply.svg">modern/Draft_Apply.svg</file>
+        <file alias="Draft_Arc.svg">modern/Draft_Arc.svg</file>
+        <file alias="Draft_Arc_3Points.svg">modern/Draft_Arc_3Points.svg</file>
+        <file alias="Draft_Array.svg">modern/Draft_Array.svg</file>
+        <file alias="Draft_BSpline.svg">modern/Draft_BSpline.svg</file>
+        <file alias="Draft_BezCurve.svg">modern/Draft_BezCurve.svg</file>
+        <file alias="Draft_Circle.svg">modern/Draft_Circle.svg</file>
+        <file alias="Draft_Clone.svg">modern/Draft_Clone.svg</file>
+        <file alias="Draft_Construction.svg">modern/Draft_Construction.svg</file>
+        <file alias="Draft_CubicBezCurve.svg">modern/Draft_CubicBezCurve.svg</file>
+        <file alias="Draft_Dimension.svg">modern/Draft_Dimension.svg</file>
+        <file alias="Draft_Downgrade.svg">modern/Draft_Downgrade.svg</file>
+        <file alias="Draft_Draft2Sketch.svg">modern/Draft_Draft2Sketch.svg</file>
+        <file alias="Draft_Edit.svg">modern/Draft_Edit.svg</file>
+        <file alias="Draft_Ellipse.svg">modern/Draft_Ellipse.svg</file>
+        <file alias="Draft_Facebinder.svg">modern/Draft_Facebinder.svg</file>
+        <file alias="Draft_Fillet.svg">modern/Draft_Fillet.svg</file>
+        <file alias="Draft_FlipDimension.svg">modern/Draft_FlipDimension.svg</file>
+        <file alias="Draft_Grid.svg">modern/Draft_Grid.svg</file>
+        <file alias="Draft_Hatch.svg">modern/Draft_Hatch.svg</file>
+        <file alias="Draft_Heal.svg">modern/Draft_Heal.svg</file>
+        <file alias="Draft_Join.svg">modern/Draft_Join.svg</file>
+        <file alias="Draft_Label.svg">modern/Draft_Label.svg</file>
+        <file alias="Draft_Layer.svg">modern/Draft_Layer.svg</file>
+        <file alias="Draft_LayerManager.svg">modern/Draft_LayerManager.svg</file>
+        <file alias="Draft_Line.svg">modern/Draft_Line.svg</file>
+        <file alias="Draft_Mirror.svg">modern/Draft_Mirror.svg</file>
+        <file alias="Draft_Move.svg">modern/Draft_Move.svg</file>
+        <file alias="Draft_Offset.svg">modern/Draft_Offset.svg</file>
+        <file alias="Draft_Point.svg">modern/Draft_Point.svg</file>
+        <file alias="Draft_Polygon.svg">modern/Draft_Polygon.svg</file>
+        <file alias="Draft_Rectangle.svg">modern/Draft_Rectangle.svg</file>
+        <file alias="Draft_Rotate.svg">modern/Draft_Rotate.svg</file>
+        <file alias="Draft_Scale.svg">modern/Draft_Scale.svg</file>
+        <file alias="Draft_SelectPlane.svg">modern/Draft_SelectPlane.svg</file>
+        <file alias="Draft_ShapeString.svg">modern/Draft_ShapeString.svg</file>
+        <file alias="Draft_Slope.svg">modern/Draft_Slope.svg</file>
+        <file alias="Draft_Split.svg">modern/Draft_Split.svg</file>
+        <file alias="Draft_Stretch.svg">modern/Draft_Stretch.svg</file>
+        <file alias="Draft_SubelementHighlight.svg">modern/Draft_SubelementHighlight.svg</file>
+        <file alias="Draft_SwitchMode.svg">modern/Draft_SwitchMode.svg</file>
+        <file alias="Draft_Text.svg">modern/Draft_Text.svg</file>
+        <file alias="Draft_Trimex.svg">modern/Draft_Trimex.svg</file>
+        <file alias="Draft_Upgrade.svg">modern/Draft_Upgrade.svg</file>
+        <file alias="Draft_Wire.svg">modern/Draft_Wire.svg</file>
+        <file alias="Draft_WireToBSpline.svg">modern/Draft_WireToBSpline.svg</file>
     </qresource>
 </RCC>

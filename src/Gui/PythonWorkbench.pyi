@@ -63,6 +63,23 @@ class PythonWorkbench(Workbench):
         """
         ...
 
+    def appendCommandPanel(self) -> None:
+        """
+        appendCommandPanel(tab, commands) -> None
+
+        Append commands to a tab of the bottom command panel. The tab is created if needed.
+        Use "Separator" to group commands.
+        """
+        ...
+
+    def removeCommandPanel(self) -> None:
+        """
+        removeCommandPanel(tab) -> None
+
+        Remove a tab from the bottom command panel.
+        """
+        ...
+
     @deprecated
     def AppendMenu(self) -> None:
         """

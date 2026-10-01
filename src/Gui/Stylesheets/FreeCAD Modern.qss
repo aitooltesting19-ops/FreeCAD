@@ -1,0 +1,1032 @@
+/*
+FreeCAD Modern
+==============================================================================================
+A light, flat engineering theme. It builds on FreeCAD.qss (imported below) and only overrides
+what changes. All colors, radii and paddings are tokens defined in
+parameters/FreeCAD Modern.yaml, so dark or custom variants only need another token file.
+
+Sections: main window, menus, toolbars, tool buttons, inputs, docks, model tree, tabs,
+task panels, scroll bars, tool tips, status bar, command panel, command search.
+==============================================================================================
+*/
+
+@import "FreeCAD.qss";
+
+/* Main window --------------------------------------------------------------------------- */
+
+QMainWindow {
+  background-color: @ModernAppBackgroundColor;
+}
+
+QMainWindow::separator {
+  background-color: @ModernAppBackgroundColor;
+}
+
+QMainWindow::separator:horizontal {
+  width: 5px;
+}
+
+QMainWindow::separator:vertical {
+  height: 5px;
+}
+
+QMainWindow::separator:hover {
+  background-color: @ModernHoverColor;
+}
+
+QMdiArea {
+  background-color: @ModernAppBackgroundColor;
+}
+
+QDialog {
+  background-color: @ModernAppBackgroundColor;
+}
+
+/* Menu bar and menus -------------------------------------------------------------------- */
+
+QMenuBar {
+  background-color: @ModernPanelColor;
+  border-bottom: 1px solid @ModernSeparatorColor;
+  padding: 2px 4px;
+}
+
+QMenuBar:focus {
+  border: none;
+  border-bottom: 1px solid @ModernSeparatorColor;
+}
+
+QMenuBar::item {
+  padding: 4px 10px;
+  border-radius: @ModernRadiusSmall;
+  background-color: transparent;
+}
+
+QMenuBar::item:selected,
+QMenuBar::item:pressed {
+  background-color: @ModernHoverColor;
+  color: @ModernTextColor;
+}
+
+QMenu {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadius;
+  padding: 5px;
+}
+
+QMenu::item {
+  padding: @ModernMenuItemPadding;
+  border-radius: @ModernRadiusSmall;
+  background-color: transparent;
+}
+
+QMenu::item:selected,
+QMenu::item:pressed {
+  background-color: @ModernHoverColor;
+  color: @ModernTextColor;
+}
+
+QMenu::item:disabled {
+  color: @ModernDisabledColor;
+}
+
+QMenu::separator {
+  height: 1px;
+  margin: 4px 6px;
+  background-color: @ModernSeparatorColor;
+}
+
+QMenu::icon {
+  margin-left: 6px;
+}
+
+QMenu::icon:checked {
+  background-color: @ModernSelectedColor;
+  border: 3px solid @ModernSelectedColor;
+  border-radius: @ModernRadiusSmall;
+  margin-left: 2px;
+}
+
+QMenu::indicator:non-exclusive:checked,
+QMenu::indicator:non-exclusive:checked:hover,
+QMenu::indicator:non-exclusive:checked:focus,
+QMenu::indicator:non-exclusive:checked:pressed {
+  image: url(qss:@ModernIconsFolder/check.svg);
+  background-color: transparent;
+}
+
+QMenu::indicator:non-exclusive:unchecked,
+QMenu::indicator:non-exclusive:unchecked:hover,
+QMenu::indicator:non-exclusive:unchecked:focus,
+QMenu::indicator:non-exclusive:unchecked:pressed {
+  image: url(qss:@ModernIconsFolder/transparent.svg);
+  background-color: transparent;
+}
+
+QMenu::indicator:exclusive:checked,
+QMenu::indicator:exclusive:checked:hover,
+QMenu::indicator:exclusive:checked:focus,
+QMenu::indicator:exclusive:checked:pressed {
+  image: url(qss:@ModernIconsFolder/check.svg);
+  background-color: transparent;
+}
+
+QMenu::indicator:exclusive:unchecked,
+QMenu::indicator:exclusive:unchecked:hover,
+QMenu::indicator:exclusive:unchecked:focus,
+QMenu::indicator:exclusive:unchecked:pressed {
+  image: url(qss:@ModernIconsFolder/transparent.svg);
+  background-color: transparent;
+}
+
+QMenu::right-arrow {
+  image: url(qss:@ModernIconsFolder/chevron-right.svg);
+}
+
+/* Toolbars ------------------------------------------------------------------------------- */
+
+QToolBar,
+QToolBar:horizontal,
+QToolBar:vertical,
+QMenu QToolBar:horizontal {
+  background-color: @ModernPanelColor;
+  border: none;
+  spacing: 2px;
+}
+
+QToolBar:horizontal {
+  padding: 3px 4px;
+}
+
+QToolBar:vertical {
+  padding: 4px 3px;
+}
+
+QToolBar::separator:horizontal {
+  width: 1px;
+  margin: 6px 6px;
+  background-color: @ModernSeparatorColor;
+}
+
+QToolBar::separator:vertical {
+  height: 1px;
+  margin: 6px 6px;
+  background-color: @ModernSeparatorColor;
+}
+
+QToolBar::handle:horizontal,
+QToolBar::handle:horizontal:hover {
+  width: 6px;
+  image: none;
+}
+
+QToolBar::handle:vertical,
+QToolBar::handle:vertical:hover {
+  height: 6px;
+  image: none;
+}
+
+QToolButton#qt_toolbar_ext_button {
+  background-color: transparent;
+  border-radius: @ModernRadiusSmall;
+}
+
+QToolButton#qt_toolbar_ext_button:hover {
+  background-color: @ModernHoverColor;
+}
+
+/* Area that holds the toolbars (top), drawn as one continuous white strip */
+QMainWindow > QToolBar {
+  border-bottom: 1px solid @ModernSeparatorColor;
+}
+
+/* Tool buttons ---------------------------------------------------------------------------- */
+
+QToolButton {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadiusSmall;
+}
+
+QToolBar QToolButton {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: @ModernRadius;
+  padding: @ModernToolbarButtonPadding;
+}
+
+QToolButton:hover,
+QToolBar QToolButton:hover,
+QDialog QToolButton:hover {
+  background-color: @ModernHoverColor;
+  border: 1px solid @ModernHoverColor;
+}
+
+QToolButton:pressed,
+QToolBar QToolButton:pressed,
+QToolBar QToolButton:hover:pressed {
+  background-color: @ModernAccentPressedColor;
+  border: 1px solid @ModernAccentPressedColor;
+  border-style: solid;
+}
+
+QToolButton:checked,
+QToolBar QToolButton:checked {
+  background-color: @ModernSelectedColor;
+  border: 1px solid @ModernSelectedColor;
+}
+
+QToolButton:checked:hover,
+QToolBar QToolButton:checked:hover {
+  background-color: @ModernSelectedColor;
+  border: 1px solid @ModernAccentColor;
+}
+
+QToolButton:disabled,
+QToolBar QToolButton:disabled {
+  color: @ModernDisabledColor;
+}
+
+QToolButton::menu-button {
+  border: none;
+  border-top-right-radius: @ModernRadius;
+  border-bottom-right-radius: @ModernRadius;
+  background-color: transparent;
+}
+
+QToolButton::menu-button:hover {
+  background-color: @ModernSelectedColor;
+}
+
+QToolButton::menu-arrow,
+QToolButton::menu-indicator,
+QToolBar[objectName="Edit"] > QToolButton::menu-arrow {
+  image: url(qss:@ModernIconsFolder/chevron-down.svg);
+  width: 10px;
+  height: 10px;
+}
+
+QToolButton::menu-arrow:hover,
+QToolButton::menu-arrow:open,
+QToolBar[objectName="Edit"] > QToolButton::menu-arrow:hover,
+QToolBar[objectName="Edit"] > QToolButton::menu-arrow:open {
+  image: url(qss:@ModernIconsFolder/chevron-down-hover.svg);
+}
+
+/* Push buttons ----------------------------------------------------------------------------- */
+
+QPushButton {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadius;
+  padding: 4px 14px;
+}
+
+QPushButton:hover {
+  background-color: @ModernHoverColor;
+  border: 1px solid @ModernAccentColor;
+}
+
+QPushButton:pressed {
+  background-color: @ModernAccentPressedColor;
+}
+
+QPushButton:default {
+  background-color: @ModernAccentColor;
+  border: 1px solid @ModernAccentColor;
+  color: @ModernPanelColor;
+}
+
+QPushButton:default:hover {
+  background-color: @ModernAccentStrongColor;
+  border: 1px solid @ModernAccentStrongColor;
+}
+
+QPushButton:disabled {
+  background-color: @ModernPanelSecondaryColor;
+  border: 1px solid @ModernBorderColor;
+  color: @ModernDisabledColor;
+}
+
+QPushButton:checked {
+  background-color: @ModernSelectedColor;
+  border: 1px solid @ModernAccentColor;
+}
+
+/* Inputs ----------------------------------------------------------------------------------- */
+
+QLineEdit,
+QAbstractSpinBox,
+QComboBox {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadius;
+  min-height: 22px;
+}
+
+QLineEdit {
+  padding: 2px 6px;
+}
+
+QLineEdit:hover,
+QAbstractSpinBox:hover,
+QComboBox:hover {
+  border: 1px solid @ModernAccentColor;
+}
+
+QLineEdit:focus,
+QAbstractSpinBox:focus,
+QComboBox:focus,
+QComboBox:on {
+  border: 1px solid @ModernAccentStrongColor;
+}
+
+QLineEdit:disabled,
+QAbstractSpinBox:disabled,
+QComboBox:disabled {
+  background-color: @ModernPanelSecondaryColor;
+  color: @ModernDisabledColor;
+}
+
+QComboBox {
+  padding-left: 8px;
+}
+
+QComboBox::drop-down {
+  border: none;
+  width: 20px;
+  background-color: transparent;
+}
+
+QComboBox::down-arrow,
+QComboBox::down-arrow:on,
+QComboBox::down-arrow:hover,
+QComboBox::down-arrow:focus {
+  image: url(qss:@ModernIconsFolder/chevron-down.svg);
+  width: 12px;
+  height: 12px;
+}
+
+QComboBox::down-arrow:disabled {
+  image: url(qss:@ModernIconsFolder/chevron-down-disabled.svg);
+}
+
+QComboBox QAbstractItemView {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadiusSmall;
+  selection-background-color: @ModernHoverColor;
+  outline: none;
+}
+
+QComboBox::item:selected,
+QComboBox QAbstractItemView:selected {
+  background-color: @ModernHoverColor;
+}
+
+QCheckBox::indicator,
+QGroupBox::indicator,
+QTreeView::indicator,
+QListView::indicator {
+  width: 14px;
+  height: 14px;
+}
+
+QCheckBox::indicator:unchecked,
+QGroupBox::indicator:unchecked {
+  image: url(qss:@ModernIconsFolder/checkbox-unchecked.svg);
+}
+
+QCheckBox::indicator:unchecked:hover,
+QGroupBox::indicator:unchecked:hover {
+  image: url(qss:@ModernIconsFolder/checkbox-unchecked-hover.svg);
+}
+
+QCheckBox::indicator:checked,
+QCheckBox::indicator:checked:hover,
+QGroupBox::indicator:checked,
+QGroupBox::indicator:checked:hover {
+  image: url(qss:@ModernIconsFolder/checkbox-checked.svg);
+}
+
+QCheckBox::indicator:indeterminate {
+  image: url(qss:@ModernIconsFolder/checkbox-indeterminate.svg);
+}
+
+QCheckBox::indicator:checked:disabled,
+QGroupBox::indicator:checked:disabled {
+  image: url(qss:@ModernIconsFolder/checkbox-checked-disabled.svg);
+}
+
+QCheckBox::indicator:unchecked:disabled,
+QGroupBox::indicator:unchecked:disabled {
+  image: url(qss:@ModernIconsFolder/checkbox-unchecked-disabled.svg);
+}
+
+QRadioButton::indicator {
+  width: 14px;
+  height: 14px;
+}
+
+QRadioButton::indicator:unchecked {
+  image: url(qss:@ModernIconsFolder/radio-unchecked.svg);
+}
+
+QRadioButton::indicator:unchecked:hover {
+  image: url(qss:@ModernIconsFolder/radio-unchecked-hover.svg);
+}
+
+QRadioButton::indicator:checked,
+QRadioButton::indicator:checked:hover {
+  image: url(qss:@ModernIconsFolder/radio-checked.svg);
+}
+
+QRadioButton::indicator:checked:disabled {
+  image: url(qss:@ModernIconsFolder/radio-checked-disabled.svg);
+}
+
+QRadioButton::indicator:unchecked:disabled {
+  image: url(qss:@ModernIconsFolder/radio-unchecked-disabled.svg);
+}
+
+QGroupBox {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadius;
+}
+
+/* Dock widgets ------------------------------------------------------------------------------- */
+
+QDockWidget {
+  border: none;
+  background-color: @ModernPanelColor;
+}
+
+QDockWidget::title {
+  background-color: @ModernPanelColor;
+  border-bottom: 1px solid @ModernSeparatorColor;
+  padding: 6px 8px;
+  text-align: left;
+  font-weight: 600;
+}
+
+QDockWidget::close-button,
+QDockWidget::close-button:pressed {
+  image: url(qss:@ModernIconsFolder/close.svg);
+}
+
+QDockWidget::close-button:hover {
+  image: url(qss:@ModernIconsFolder/close-hover.svg);
+}
+
+/* Tabs of docked panels (e.g. Model | Tasks): segmented control at the top of the side area */
+QMainWindow > QTabBar {
+  background-color: @ModernPanelColor;
+  qproperty-drawBase: 0;
+}
+
+QMainWindow > QTabBar::tab,
+QMainWindow > QTabBar::tab:top,
+QMainWindow > QTabBar::tab:bottom {
+  background-color: @ModernPanelSecondaryColor;
+  color: @ModernTextSecondaryColor;
+  border: none;
+  border-radius: 0px;
+  padding: @ModernTabPadding;
+  margin: 6px 0px 6px 0px;
+  min-width: 60px;
+}
+
+QMainWindow > QTabBar::tab:first {
+  border-top-left-radius: @ModernRadius;
+  border-bottom-left-radius: @ModernRadius;
+  margin-left: 8px;
+}
+
+QMainWindow > QTabBar::tab:last {
+  border-top-right-radius: @ModernRadius;
+  border-bottom-right-radius: @ModernRadius;
+}
+
+QMainWindow > QTabBar::tab:only-one {
+  border-radius: @ModernRadius;
+}
+
+QMainWindow > QTabBar::tab:selected,
+QMainWindow > QTabBar::tab:top:selected,
+QMainWindow > QTabBar::tab:bottom:selected {
+  background-color: @ModernAccentColor;
+  color: @ModernPanelColor;
+  border: none;
+  font-weight: 600;
+}
+
+QMainWindow > QTabBar::tab:!selected:hover {
+  background-color: @ModernHoverColor;
+  color: @ModernTextColor;
+  border: none;
+}
+
+/* Model tree and other item views ----------------------------------------------------------- */
+
+QTreeView,
+QListView,
+QTableView {
+  background-color: @ModernPanelColor;
+  alternate-background-color: @ModernPanelSecondaryColor;
+  selection-background-color: @ModernSelectedColor;
+  selection-color: @ModernTextColor;
+  border: none;
+  outline: none;
+}
+
+QTreeView {
+  show-decoration-selected: 1;
+  qproperty-indentation: 18;
+}
+
+QTreeView::item {
+  border: none;
+  padding: 1px 2px;
+}
+
+QTreeView::item:hover,
+QTreeView::item:!selected:hover,
+QListView::item:hover,
+QListView::item:!selected:hover,
+QTableView::item:hover {
+  background-color: @ModernHoverColor;
+  color: @ModernTextColor;
+}
+
+QTreeView::item:selected,
+QListView::item:selected,
+QTableView::item:selected {
+  background-color: @ModernSelectedColor;
+  color: @ModernTextColor;
+}
+
+QTreeView::branch {
+  background-color: transparent;
+}
+
+QTreeView::branch:hover {
+  background-color: @ModernHoverColor;
+}
+
+QTreeView::branch:selected {
+  background-color: @ModernSelectedColor;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+  image: url(qss:@ModernIconsFolder/chevron-right.svg);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+  image: url(qss:@ModernIconsFolder/chevron-down.svg);
+}
+
+QTreeView::branch:has-children:!has-siblings:closed:hover,
+QTreeView::branch:closed:has-children:has-siblings:hover {
+  image: url(qss:@ModernIconsFolder/chevron-right-hover.svg);
+}
+
+QTreeView::branch:open:has-children:!has-siblings:hover,
+QTreeView::branch:open:has-children:has-siblings:hover {
+  image: url(qss:@ModernIconsFolder/chevron-down-hover.svg);
+}
+
+QHeaderView {
+  background-color: @ModernPanelColor;
+}
+
+QHeaderView::section {
+  background-color: @ModernPanelColor;
+  color: @ModernTextSecondaryColor;
+  border: none;
+  border-bottom: 1px solid @ModernSeparatorColor;
+  padding: 4px 6px;
+}
+
+QMainWindow QHeaderView::section::horizontal,
+QHeaderView::section::horizontal {
+  background-color: @ModernPanelColor;
+  border: none;
+  border-bottom: 1px solid @ModernSeparatorColor;
+  border-right: 1px solid @ModernSeparatorColor;
+}
+
+/* Search field above the model tree */
+Gui--TreePanel QLineEdit#TreeSearchBox {
+  margin: 8px 8px 6px 8px;
+  padding: 3px 6px;
+  background-color: @ModernPanelSecondaryColor;
+  border: 1px solid @ModernPanelSecondaryColor;
+}
+
+Gui--TreePanel QLineEdit#TreeSearchBox:hover {
+  border: 1px solid @ModernBorderColor;
+}
+
+Gui--TreePanel QLineEdit#TreeSearchBox:focus {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernAccentStrongColor;
+}
+
+Gui--TreePanel,
+Gui--PropertyEditor--PropertyEditor {
+  background-color: @ModernPanelColor;
+}
+
+/* Generic tab widgets and document tabs ---------------------------------------------------- */
+
+QTabWidget::pane {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadius;
+}
+
+QTabBar::tab,
+QDockWidget QTabBar::tab {
+  background-color: transparent;
+  color: @ModernTextSecondaryColor;
+  padding: 5px 12px;
+}
+
+QTabBar::tab:top,
+QTabBar::tab:bottom,
+QDockWidget QTabBar::tab:top,
+QDockWidget QTabBar::tab:bottom {
+  background-color: @ModernPanelSecondaryColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: 0px;
+  margin-right: -1px;
+}
+
+QTabBar::tab:top {
+  border-top-left-radius: @ModernRadiusSmall;
+  border-top-right-radius: @ModernRadiusSmall;
+}
+
+QTabBar::tab:bottom {
+  border-bottom-left-radius: @ModernRadiusSmall;
+  border-bottom-right-radius: @ModernRadiusSmall;
+}
+
+QTabBar::tab:top:selected,
+QTabBar::tab:bottom:selected,
+QDockWidget QTabBar::tab:top:selected,
+QDockWidget QTabBar::tab:bottom:selected {
+  background-color: @ModernPanelColor;
+  color: @ModernTextColor;
+  font-weight: 600;
+}
+
+QTabBar::tab:top:selected,
+QDockWidget QTabBar::tab:top:selected {
+  border-top: 2px solid @ModernAccentColor;
+  border-bottom: 1px solid @ModernPanelColor;
+}
+
+QTabBar::tab:bottom:selected,
+QDockWidget QTabBar::tab:bottom:selected {
+  border-bottom: 2px solid @ModernAccentColor;
+  border-top: 1px solid @ModernPanelColor;
+}
+
+QTabBar::tab:top:!selected:hover,
+QTabBar::tab:bottom:!selected:hover,
+QDockWidget QTabBar::tab:top:!selected:hover,
+QDockWidget QTabBar::tab:bottom:!selected:hover {
+  background-color: @ModernHoverColor;
+  color: @ModernTextColor;
+  border: 1px solid @ModernBorderColor;
+}
+
+QTabBar#mdiAreaTabBar {
+  background-color: @ModernAppBackgroundColor;
+  qproperty-drawBase: 0;
+}
+
+QTabBar#mdiAreaTabBar::tab {
+  min-width: 90px;
+  padding: 6px 14px;
+}
+
+QTabBar#mdiAreaTabBar::tab:bottom:selected {
+  background-color: @ModernPanelColor;
+}
+
+QTabBar::close-button,
+QDockWidget QTabBar::close-button,
+QTabBar::close-button:pressed {
+  image: url(qss:@ModernIconsFolder/close.svg);
+  margin: 2px;
+}
+
+QTabBar::close-button:hover,
+QDockWidget QTabBar::close-button:hover {
+  image: url(qss:@ModernIconsFolder/close-hover.svg);
+}
+
+/* Task panels (e.g. Draft "Create objects") ----------------------------------------------- */
+
+QSint--ActionGroup QFrame[class="header"] {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-bottom: none;
+  border-top-left-radius: @ModernRadius;
+  border-top-right-radius: @ModernRadius;
+}
+
+QSint--ActionGroup QToolButton[class="header"] {
+  font-weight: 600;
+  padding: 4px 2px;
+  background-color: transparent;
+  border: none;
+}
+
+QSint--ActionGroup QFrame[class="content"] {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernBorderColor;
+  border-top: none;
+  border-bottom-left-radius: @ModernRadius;
+  border-bottom-right-radius: @ModernRadius;
+}
+
+/* Command lists inside task panels: flat rows instead of framed buttons */
+QSint--ActionGroup QFrame[class="content"] QSint--ActionLabel,
+QSint--ActionGroup QFrame[class="content"] QToolButton[class="action"] {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: @ModernRadiusSmall;
+  padding: 4px 6px;
+  text-align: left;
+}
+
+QSint--ActionGroup QFrame[class="content"] QSint--ActionLabel:hover,
+QSint--ActionGroup QFrame[class="content"] QToolButton[class="action"]:hover {
+  background-color: @ModernHoverColor;
+  border: 1px solid @ModernHoverColor;
+}
+
+/* Scroll bars: slim, rounded, no arrows ----------------------------------------------------- */
+
+QScrollBar:horizontal {
+  background-color: transparent;
+  border: none;
+  height: @ModernScrollbarWidth;
+  margin: 0px;
+  padding: 1px;
+}
+
+QScrollBar:vertical {
+  background-color: transparent;
+  border: none;
+  width: @ModernScrollbarWidth;
+  margin: 0px;
+  padding: 1px;
+}
+
+QScrollBar::handle:horizontal,
+QScrollBar::handle:vertical {
+  background-color: @ModernBorderColor;
+  border: none;
+  border-radius: 3px;
+}
+
+QScrollBar::handle:horizontal {
+  min-width: 28px;
+}
+
+QScrollBar::handle:vertical {
+  min-height: 28px;
+}
+
+QScrollBar::handle:horizontal:hover,
+QScrollBar::handle:vertical:hover,
+QScrollBar::handle:hover {
+  background-color: @ModernDisabledColor;
+  border: none;
+}
+
+QScrollBar::add-line,
+QScrollBar::sub-line,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal,
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+  width: 0px;
+  height: 0px;
+  border: none;
+  background: none;
+}
+
+QScrollBar::left-arrow,
+QScrollBar::right-arrow,
+QScrollBar::up-arrow,
+QScrollBar::down-arrow,
+QScrollBar::left-arrow:hover,
+QScrollBar::right-arrow:hover,
+QScrollBar::up-arrow:hover,
+QScrollBar::down-arrow:hover {
+  border-image: none;
+  image: none;
+  width: 0px;
+  height: 0px;
+}
+
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  background: none;
+}
+
+/* Splitters ----------------------------------------------------------------------------------- */
+
+QSplitter::handle {
+  background-color: @ModernSeparatorColor;
+}
+
+QSplitter::handle:horizontal {
+  width: 1px;
+}
+
+QSplitter::handle:vertical {
+  height: 1px;
+}
+
+QSplitter::handle:hover {
+  background-color: @ModernAccentColor;
+}
+
+/* Tool tips -------------------------------------------------------------------------------- */
+
+QToolTip,
+QStatusBar QToolTip {
+  background-color: @ModernTooltipBackgroundColor;
+  color: @ModernTextColor;
+  border: 1px solid @ModernBorderColor;
+  border-radius: @ModernRadius;
+  padding: 5px 8px;
+  font-weight: normal;
+  opacity: 245;
+}
+
+/* Status bar --------------------------------------------------------------------------------- */
+
+QStatusBar {
+  background-color: @ModernPanelColor;
+  border-top: 1px solid @ModernSeparatorColor;
+  color: @ModernTextSecondaryColor;
+  min-height: 24px;
+}
+
+QStatusBar::item {
+  border: none;
+}
+
+QStatusBar QLabel {
+  color: @ModernTextSecondaryColor;
+  padding: 0px 6px;
+}
+
+QStatusBar QPushButton,
+QStatusBar QToolButton {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: @ModernRadiusSmall;
+  padding: 1px 6px;
+}
+
+QStatusBar QPushButton:hover,
+QStatusBar QToolButton:hover {
+  background-color: @ModernHoverColor;
+  border: 1px solid @ModernHoverColor;
+}
+
+QStatusBar QPushButton::menu-indicator {
+  image: url(qss:@ModernIconsFolder/chevron-down.svg);
+  width: 9px;
+  height: 9px;
+}
+
+/* Bottom command panel ------------------------------------------------------------------- */
+
+Gui--CommandPanel {
+  background-color: @ModernPanelColor;
+  border-top: 1px solid @ModernSeparatorColor;
+}
+
+Gui--CommandPanel QWidget#CommandPanelHeader {
+  background-color: @ModernPanelSecondaryColor;
+  border-bottom: 1px solid @ModernSeparatorColor;
+}
+
+Gui--CommandPanel QTabBar#CommandPanelTabBar {
+  qproperty-drawBase: 0;
+  background-color: transparent;
+}
+
+Gui--CommandPanel QTabBar#CommandPanelTabBar::tab,
+Gui--CommandPanel QTabBar#CommandPanelTabBar::tab:top {
+  background-color: @ModernPanelSecondaryColor;
+  color: @ModernTextColor;
+  border: none;
+  border-top-left-radius: @ModernRadius;
+  border-top-right-radius: @ModernRadius;
+  padding: @ModernCommandPanelTabPadding;
+  margin: 0px 2px 0px 0px;
+  min-width: 96px;
+  font-weight: 500;
+}
+
+Gui--CommandPanel QTabBar#CommandPanelTabBar::tab:!selected:hover,
+Gui--CommandPanel QTabBar#CommandPanelTabBar::tab:top:!selected:hover {
+  background-color: @ModernHoverColor;
+  border: none;
+}
+
+Gui--CommandPanel QTabBar#CommandPanelTabBar::tab:selected,
+Gui--CommandPanel QTabBar#CommandPanelTabBar::tab:top:selected {
+  background-color: @ModernAccentColor;
+  color: @ModernPanelColor;
+  border: none;
+  font-weight: 600;
+}
+
+Gui--CommandPanel QToolButton#CommandPanelCollapseButton {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: @ModernRadiusSmall;
+  padding: 3px;
+}
+
+Gui--CommandPanel QToolButton#CommandPanelCollapseButton:hover {
+  background-color: @ModernHoverColor;
+  border: 1px solid @ModernHoverColor;
+}
+
+Gui--CommandPanel QScrollArea#CommandPanelScrollArea,
+Gui--CommandPanel QWidget#CommandPanelPage,
+Gui--CommandPanel QStackedWidget#CommandPanelStack {
+  background-color: @ModernPanelColor;
+  border: none;
+}
+
+Gui--CommandPanel QFrame#CommandPanelSeparator {
+  background-color: @ModernSeparatorColor;
+  border: none;
+  margin: 10px 0px;
+}
+
+Gui--CommandPanelButton {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: @ModernRadius;
+  color: @ModernTextColor;
+}
+
+Gui--CommandPanelButton:hover {
+  background-color: @ModernHoverColor;
+  border: 1px solid @ModernHoverColor;
+}
+
+Gui--CommandPanelButton:pressed,
+Gui--CommandPanelButton:hover:pressed {
+  background-color: @ModernAccentPressedColor;
+  border: 1px solid @ModernAccentPressedColor;
+}
+
+Gui--CommandPanelButton:checked {
+  background-color: @ModernSelectedColor;
+  border: 1px solid @ModernAccentColor;
+}
+
+Gui--CommandPanelButton:disabled {
+  color: @ModernDisabledColor;
+}
+
+/* Command search ------------------------------------------------------------------------- */
+
+QMenuBar QWidget#MenuBarSearchArea {
+  background-color: transparent;
+}
+
+Gui--CommandSearchBox {
+  background-color: @ModernPanelSecondaryColor;
+  border: 1px solid @ModernPanelSecondaryColor;
+  border-radius: @ModernRadius;
+  padding: 2px 6px;
+  min-height: 22px;
+}
+
+Gui--CommandSearchBox:hover {
+  border: 1px solid @ModernBorderColor;
+}
+
+Gui--CommandSearchBox:focus {
+  background-color: @ModernPanelColor;
+  border: 1px solid @ModernAccentStrongColor;
+}

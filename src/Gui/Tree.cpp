@@ -29,6 +29,10 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QHeaderView>
+#include <QKeyEvent>
+#include <QLineEdit>
+#include <QSet>
+#include <QTreeWidgetItemIterator>
 #include <QMenu>
 #include <QMessageBox>
 #include <QPainter>
@@ -4108,6 +4112,7 @@ TreePanel::TreePanel(const char* name, QWidget* parent)
     auto pLayout = new QVBoxLayout(this);
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
+    setupFilterBox();
     pLayout->addWidget(this->treeWidget);
     connect(this->treeWidget, &TreeWidget::emitSearchObjects, this, &TreePanel::showEditor);
 
@@ -4134,6 +4139,15 @@ void TreePanel::accept()
 
 bool TreePanel::eventFilter(QObject* obj, QEvent* ev)
 {
+    if (filterBox && obj == filterBox && ev->type() == QEvent::KeyPress) {
+        if (static_cast<QKeyEvent*>(ev)->key() == Qt::Key_Escape) {
+            filterBox->clear();
+            treeWidget->setFocus();
+            return true;
+        }
+        return false;
+    }
+
     if (obj != this->searchBox) {
         return false;
     }
@@ -4180,6 +4194,154 @@ void TreePanel::hideEditor()
 void TreePanel::itemSearch(const QString& text)
 {
     this->treeWidget->itemSearch(text, false);
+}
+
+namespace
+{
+// Marks items hidden by the model filter, so that only those are shown again afterwards and
+// items hidden for other reasons (e.g. objects not shown in the tree) keep their state.
+constexpr int FilterHiddenRole = Qt::UserRole + 1000;
+}  // namespace
+
+void TreePanel::setupFilterBox()
+{
+    auto hModern = App::GetApplication().GetParameterGroupByPath(
+        "User parameter:BaseApp/Preferences/ModernUI"
+    );
+    if (!hModern->GetBool("Enabled", true)) {
+        return;
+    }
+
+    filterBox = new QLineEdit(this);
+    filterBox->setObjectName(QStringLiteral("TreeSearchBox"));
+    filterBox->setPlaceholderText(tr("Search in model..."));
+    filterBox->setToolTip(tr("Type part of an object label to find it in the model tree"));
+    filterBox->setClearButtonEnabled(true);
+    filterBox->addAction(
+        BitmapFactory().iconFromTheme("ModernUI_Search"),
+        QLineEdit::LeadingPosition
+    );
+
+    // Trailing button: switch between filtering the tree and just finding items in it
+    filterModeAction = filterBox->addAction(
+        BitmapFactory().iconFromTheme("ModernUI_Filter"),
+        QLineEdit::TrailingPosition
+    );
+    filterModeAction->setCheckable(true);
+    filterModeAction->setChecked(hModern->GetBool("TreeFilterMode", true));
+    const auto updateModeToolTip = [this]() {
+        filterModeAction->setToolTip(
+            filterModeAction->isChecked()
+                ? tr("Filter: only matching objects are shown (click to only highlight them)")
+                : tr("Find: matching objects are highlighted (click to hide the others)")
+        );
+    };
+    updateModeToolTip();
+    connect(filterModeAction, &QAction::toggled, this, [this, hModern, updateModeToolTip](bool on) {
+        hModern->SetBool("TreeFilterMode", on);
+        updateModeToolTip();
+        applyFilter();
+    });
+
+    // Debounce typing and tree updates (objects added while a filter is active)
+    filterTimer = new QTimer(this);
+    filterTimer->setSingleShot(true);
+    filterTimer->setInterval(150);
+    connect(filterTimer, &QTimer::timeout, this, &TreePanel::applyFilter);
+    connect(filterBox, &QLineEdit::textChanged, filterTimer, qOverload<>(&QTimer::start));
+    connect(filterBox, &QLineEdit::returnPressed, this, &TreePanel::onFilterAccepted);
+    connect(treeWidget->model(), &QAbstractItemModel::rowsInserted, this, [this]() {
+        if (!filterBox->text().isEmpty()) {
+            filterTimer->start();
+        }
+    });
+    filterBox->installEventFilter(this);
+
+    layout()->addWidget(filterBox);
+}
+
+void TreePanel::clearFilter()
+{
+    for (QTreeWidgetItemIterator it(treeWidget); *it; ++it) {
+        QTreeWidgetItem* item = *it;
+        if (item->data(0, FilterHiddenRole).toBool()) {
+            item->setData(0, FilterHiddenRole, QVariant());
+            item->setHidden(false);
+        }
+    }
+}
+
+void TreePanel::applyFilter()
+{
+    if (!filterBox) {
+        return;
+    }
+
+    clearFilter();
+    const QString text = filterBox->text().trimmed();
+    if (text.isEmpty()) {
+        return;
+    }
+
+    const bool filtering = filterModeAction->isChecked();
+    QTreeWidgetItem* firstMatch = nullptr;
+    QSet<QTreeWidgetItem*> keep;
+    for (QTreeWidgetItemIterator it(treeWidget); *it; ++it) {
+        QTreeWidgetItem* item = *it;
+        if (item->text(0).contains(text, Qt::CaseInsensitive)) {
+            if (!firstMatch && !item->isHidden()) {
+                firstMatch = item;
+            }
+            // keep the match and its parents, and unfold the parents
+            for (QTreeWidgetItem* p = item; p; p = p->parent()) {
+                keep.insert(p);
+                if (p != item) {
+                    p->setExpanded(true);
+                }
+            }
+        }
+    }
+
+    if (filtering) {
+        for (QTreeWidgetItemIterator it(treeWidget); *it; ++it) {
+            QTreeWidgetItem* item = *it;
+            // document items always stay, so the tree never looks empty by surprise
+            if (!item->parent() || keep.contains(item) || item->isHidden()) {
+                continue;
+            }
+            item->setData(0, FilterHiddenRole, true);
+            item->setHidden(true);
+        }
+    }
+
+    if (firstMatch) {
+        treeWidget->scrollToItem(firstMatch);
+    }
+}
+
+void TreePanel::onFilterAccepted()
+{
+    // Enter selects all matching objects, which also selects them in the 3D view
+    const QString text = filterBox->text().trimmed();
+    if (text.isEmpty()) {
+        return;
+    }
+    QList<QTreeWidgetItem*> matches;
+    for (QTreeWidgetItemIterator it(treeWidget); *it; ++it) {
+        QTreeWidgetItem* item = *it;
+        if (item->parent() && !item->isHidden() && item->text(0).contains(text, Qt::CaseInsensitive)) {
+            matches << item;
+        }
+    }
+    if (matches.isEmpty()) {
+        return;
+    }
+    treeWidget->clearSelection();
+    for (auto item : matches) {
+        item->setSelected(true);
+    }
+    treeWidget->scrollToItem(matches.front());
+    treeWidget->setFocus();
 }
 
 // ----------------------------------------------------------------------------

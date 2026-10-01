@@ -420,6 +420,11 @@ class BIMWorkbench(Workbench):
         self.appendToolbar(t9, self.modify_3d)
         self.appendToolbar(t6, self.manage)
 
+        # Bottom command panel of the modern UI: the Draft tabs plus the BIM tools
+        panel_tabs = init_tools.get_draft_command_panel_tabs()
+        panel_tabs.insert(1, (QT_TRANSLATE_NOOP("Workbench", "BIM"), self.bimtools))
+        init_tools.init_command_panel(self, panel_tabs)
+
         # create menus
 
         t1 = QT_TRANSLATE_NOOP("Workbench", "&2D Drafting")

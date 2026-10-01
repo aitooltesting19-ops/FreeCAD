@@ -124,6 +124,12 @@ class DraftWorkbench(FreeCADGui.Workbench):
             self, QT_TRANSLATE_NOOP("Workbench", "Draft Snap"), it.get_draft_snap_commands()
         )
 
+        # Bottom command panel of the modern UI: Creation, Modification, Annotation, Utility
+        it.init_command_panel(self)
+        it.hide_toolbars_shown_in_command_panel(
+            ["Draft Creation", "Draft Annotation", "Draft Modification", "Draft Utility"]
+        )
+
         # Set up menus
         it.init_menu(self, [QT_TRANSLATE_NOOP("Workbench", "&Drafting")], self.drawing_commands)
         it.init_menu(

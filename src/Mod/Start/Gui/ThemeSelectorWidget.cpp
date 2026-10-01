@@ -113,12 +113,14 @@ void ThemeSelectorWidget::setupButtons(QBoxLayout* layout)
     std::map<Theme, QString> themeMap {
         {Theme::Classic, tr("FreeCAD Classic")},
         {Theme::Dark, tr("FreeCAD Dark")},
-        {Theme::Light, tr("FreeCAD Light")}
+        {Theme::Light, tr("FreeCAD Light")},
+        {Theme::Modern, tr("FreeCAD Modern")}
     };
     std::map<Theme, QIcon> iconMap {
         {Theme::Classic, QIcon(QLatin1String(":/thumbnails/Theme_thumbnail_classic.png"))},
         {Theme::Light, QIcon(QLatin1String(":/thumbnails/Theme_thumbnail_light.png"))},
-        {Theme::Dark, QIcon(QLatin1String(":/thumbnails/Theme_thumbnail_dark.png"))}
+        {Theme::Dark, QIcon(QLatin1String(":/thumbnails/Theme_thumbnail_dark.png"))},
+        {Theme::Modern, QIcon(QLatin1String(":/thumbnails/Theme_thumbnail_modern.png"))}
     };
     auto hGrp = App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/MainWindow"
@@ -143,6 +145,13 @@ void ThemeSelectorWidget::setupButtons(QBoxLayout* layout)
         else if (theme.first == Theme::Light
                  && styleSheetName.contains(
                      QLatin1String("FreeCAD Light"),
+                     Qt::CaseSensitivity::CaseInsensitive
+                 )) {
+            button->setChecked(true);
+        }
+        else if (theme.first == Theme::Modern
+                 && styleSheetName.contains(
+                     QLatin1String("FreeCAD Modern"),
                      Qt::CaseSensitivity::CaseInsensitive
                  )) {
             button->setChecked(true);
@@ -201,7 +210,7 @@ void ThemeSelectorWidget::preselectThemeFromSystemSettings()
     );
     auto styleSheetName = QString::fromStdString(hGrp->GetASCII("StyleSheet", nullStyle));
     if (styleSheetName == QString::fromStdString(nullStyle)) {
-        auto theme = isSystemInDarkMode() ? Theme::Dark : Theme::Light;
+        auto theme = isSystemInDarkMode() ? Theme::Dark : Theme::Modern;
         themeChanged(theme);
     }
 }
@@ -219,6 +228,9 @@ void ThemeSelectorWidget::themeChanged(Theme newTheme)
             break;
         case Theme::Light:
             prefPackManager->apply("FreeCAD Light");
+            break;
+        case Theme::Modern:
+            prefPackManager->apply("FreeCAD Modern");
             break;
     }
     ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath(
@@ -257,4 +269,5 @@ void ThemeSelectorWidget::retranslateUi()
     _buttons[static_cast<int>(Theme::Dark)]->setText(tr("FreeCAD Dark", "Visual theme name"));
     _buttons[static_cast<int>(Theme::Light)]->setText(tr("FreeCAD Light", "Visual theme name"));
     _buttons[static_cast<int>(Theme::Classic)]->setText(tr("FreeCAD Classic", "Visual theme name"));
+    _buttons[static_cast<int>(Theme::Modern)]->setText(tr("FreeCAD Modern", "Visual theme name"));
 }

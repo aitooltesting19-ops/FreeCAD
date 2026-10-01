@@ -46,6 +46,7 @@ struct CmdInfo
 std::vector<CmdInfo> _Commands;
 int _CommandRevision;
 const int CommandNameRole = Qt::UserRole;
+const int CommandSearchRole = Qt::UserRole + 1;
 bool _ShortcutSignalConnected = false;
 
 class CommandModel: public QAbstractItemModel
@@ -127,6 +128,11 @@ public:
             case CommandNameRole:
                 return QByteArray(info.cmd->getName());
 
+            case CommandSearchRole:
+                // menu text, command name, shortcut and plain tool tip
+                return data(index, Qt::DisplayRole).toString() + QLatin1Char(' ')
+                    + Action::commandToolTip(info.cmd, false);
+
             default:
                 break;
         }
@@ -169,6 +175,11 @@ CommandCompleter::CommandCompleter(QLineEdit* lineedit, QObject* parent)
         &CommandCompleter::onCommandActivated
     );
     connect(this, qOverload<const QString&>(&CommandCompleter::highlighted), lineedit, &QLineEdit::setText);
+}
+
+void CommandCompleter::setSearchToolTips(bool on)
+{
+    setCompletionRole(on ? CommandSearchRole : Qt::EditRole);
 }
 
 bool CommandCompleter::eventFilter(QObject* o, QEvent* ev)

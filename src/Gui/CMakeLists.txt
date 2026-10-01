@@ -731,6 +731,7 @@ SET(Dialog_Settings_CPP_SRCS
     PreferencePages/DlgSettingsReportView.cpp
     PreferencePages/DlgSettingsSelection.cpp
     PreferencePages/DlgSettingsUI.cpp
+    PreferencePages/DlgSettingsModernUI.cpp
     PreferencePages/DlgSettingsViewColor.cpp
     PreferencePages/DlgSettingsWorkbenchesImp.cpp
     PreferencePages/DlgSettingsAdvanced.cpp
@@ -754,6 +755,7 @@ SET(Dialog_Settings_HPP_SRCS
     PreferencePages/DlgSettingsReportView.h
     PreferencePages/DlgSettingsSelection.h
     PreferencePages/DlgSettingsUI.h
+    PreferencePages/DlgSettingsModernUI.h
     PreferencePages/DlgSettingsViewColor.h
     PreferencePages/DlgSettingsWorkbenchesImp.h
     PreferencePages/DlgSettingsAdvanced.h
@@ -1133,6 +1135,7 @@ SET(Inventor_CPP_SRCS
     Inventor/SoFCPlacementIndicatorKit.cpp
     Inventor/SoDrawingGrid.cpp
     Inventor/SoFCBackgroundGradient.cpp
+    Inventor/SoFCBackgroundGrid.cpp
     Inventor/SoFCBoundingBox.cpp
     Inventor/SoMouseWheelEvent.cpp
     Inventor/SoFCTransform.cpp
@@ -1173,6 +1176,7 @@ SET(Inventor_SRCS
     Inventor/SoFCPlacementIndicatorKit.h
     Inventor/SoDrawingGrid.h
     Inventor/SoFCBackgroundGradient.h
+    Inventor/SoFCBackgroundGrid.h
     Inventor/SoFCBoundingBox.h
     Inventor/SoMouseWheelEvent.h
     Inventor/SoFCTransform.h
@@ -1447,8 +1451,23 @@ SET(FreeCADGui_SRCS
     StyleParameters/ParameterManager.h
 )
 
+# Modern UI layer: bottom command panel, command search, workspace appearance
+SET(ModernUI_SRCS
+    ModernUI/ModernUI.cpp
+    ModernUI/ModernUI.h
+    ModernUI/CommandPanel.cpp
+    ModernUI/CommandPanel.h
+    ModernUI/CommandSearch.cpp
+    ModernUI/CommandSearch.h
+    ModernUI/ModernCommands.cpp
+    ModernUI/WorkspaceAppearance.cpp
+    ModernUI/WorkspaceAppearance.h
+)
+SOURCE_GROUP("ModernUI" FILES ${ModernUI_SRCS})
+
 SET(FreeCADGui_SRCS
     ${FreeCADGui_connexion_SRCS}
+    ${ModernUI_SRCS}
     ${FreeCADGui_connexion_HDRS}
     ${FreeCADGui_CPP_SRCS}
     ${FreeCADGui_Pyi_SRCS}

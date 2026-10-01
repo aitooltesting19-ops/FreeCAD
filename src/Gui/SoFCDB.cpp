@@ -79,6 +79,7 @@
 #include "Inventor/SoAxisCrossKit.h"
 #include "Inventor/SoDrawingGrid.h"
 #include "Inventor/SoFCBackgroundGradient.h"
+#include "Inventor/SoFCBackgroundGrid.h"
 #include "Inventor/SoFCBoundingBox.h"
 #include "Inventor/SoMouseWheelEvent.h"
 #include "Inventor/SoFCTransform.h"
@@ -113,6 +114,7 @@ void Gui::SoFCDB::init()
     SoFCColorLegend ::initClass();
     SoFCColorGradient ::initClass();
     SoFCBackgroundGradient ::initClass();
+    SoFCBackgroundGrid::initClass();
     SoFCBoundingBox ::initClass();
     SoFCSelection ::initClass();
     SoFCUnifiedSelection ::initClass();
@@ -249,6 +251,7 @@ void Gui::SoFCDB::finish()
     SoFCColorLegend ::finish();
     SoFCColorGradient ::finish();
     SoFCBackgroundGradient ::finish();
+    SoFCBackgroundGrid::finish();
     SoFCBoundingBox ::finish();
     SoFCSelection ::finish();
     SoFCPreselectionAction ::finish();

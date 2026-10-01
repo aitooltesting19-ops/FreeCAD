@@ -49,6 +49,7 @@ private:
     void setImagePaths();
     void registerEventType();
     void setThemePaths();
+    void setModernIcons();
     void setupFileDialog();
 };
 
@@ -73,6 +74,7 @@ private:
     void loadOpenInventor();
     void setBranding();
     void setStyleSheet();
+    void setupModernUI();
     void autoloadModules(const QStringList& wb);
     void setImportImageFormats();
     void showMainWindow();

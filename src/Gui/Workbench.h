@@ -122,6 +122,11 @@ protected:
     virtual ToolBarItem* setupCommandBars() const = 0;
     /** Returns a DockWindowItems structure of dock windows this workbench. */
     virtual DockWindowItems* setupDockWindows() const = 0;
+    /** Returns a ToolBarItem tree structure for the bottom command panel: one child item per
+     * tab, each holding the command names of that tab. The default implementation returns an
+     * empty structure, which hides the panel while the workbench is active.
+     */
+    virtual ToolBarItem* setupCommandPanel() const;
     /** Sets up the contextmenu for this workbench.
      * The default implementation does nothing.
      */
@@ -285,6 +290,11 @@ public:
     void appendCommandbar(const std::string& bar, const std::list<std::string>& items) const;
     /// Removes a command bar
     void removeCommandbar(const std::string& bar) const;
+
+    /// Appends commands to a tab of the bottom command panel, creating the tab if needed
+    void appendCommandPanel(const std::string& tab, const std::list<std::string>& items) const;
+    /// Removes a tab from the bottom command panel
+    void removeCommandPanel(const std::string& tab) const;
     //@}
 
 protected:
@@ -292,12 +302,14 @@ protected:
     ToolBarItem* setupToolBars() const override;
     ToolBarItem* setupCommandBars() const override;
     DockWindowItems* setupDockWindows() const override;
+    ToolBarItem* setupCommandPanel() const override;
 
 protected:
     MenuItem* _menuBar {nullptr};
     MenuItem* _contextMenu {nullptr};
     ToolBarItem* _toolBar {nullptr};
     ToolBarItem* _commandBar {nullptr};
+    ToolBarItem* _commandPanel {nullptr};
     Base::PyObjectBase* _workbenchPy {nullptr};
 };
 

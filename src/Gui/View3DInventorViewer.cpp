@@ -110,6 +110,7 @@
 #include "GLPainter.h"
 #include "Inventor/SoAxisCrossKit.h"
 #include "Inventor/SoFCBackgroundGradient.h"
+#include "Inventor/SoFCBackgroundGrid.h"
 #include "Inventor/SoFCBoundingBox.h"
 #include "MainWindow.h"
 #include "Multisample.h"
@@ -510,6 +511,8 @@ void View3DInventorViewer::init()
     // Background stuff
     pcBackGround = new SoFCBackgroundGradient;
     pcBackGround->ref();
+    pcBackgroundGrid = new SoFCBackgroundGrid;
+    pcBackgroundGrid->ref();
 
     // Set up foreground, overlaid scenegraph.
     this->foregroundroot = new SoSeparator;
@@ -725,6 +728,9 @@ View3DInventorViewer::~View3DInventorViewer()
     this->foregroundroot = nullptr;
     this->pcBackGround->unref();
     this->pcBackGround = nullptr;
+    this->pcBackgroundGrid->setSceneCamera(nullptr);
+    this->pcBackgroundGrid->unref();
+    this->pcBackgroundGrid = nullptr;
 
     setSceneGraph(nullptr);
     this->pEventCallback->unref();
@@ -1366,13 +1372,14 @@ void View3DInventorViewer::setGradientBackground(View3DInventorViewer::Backgroun
         case Background::LinearGradient:
             pcBackGround->setGradient(SoFCBackgroundGradient::LINEAR);
             if (backgroundroot->findChild(pcBackGround) == -1) {
-                backgroundroot->addChild(pcBackGround);
+                // keep the gradient right after the camera so it is drawn below the grid
+                backgroundroot->insertChild(pcBackGround, 1);
             }
             break;
         case Background::RadialGradient:
             pcBackGround->setGradient(SoFCBackgroundGradient::RADIAL);
             if (backgroundroot->findChild(pcBackGround) == -1) {
-                backgroundroot->addChild(pcBackGround);
+                backgroundroot->insertChild(pcBackGround, 1);
             }
             break;
     }
@@ -1403,6 +1410,44 @@ void View3DInventorViewer::setGradientBackgroundColor(
 )
 {
     pcBackGround->setColorGradient(fromColor, toColor, midColor);
+}
+
+void View3DInventorViewer::setBackgroundGrid(bool on)
+{
+    const bool present = backgroundroot->findChild(pcBackgroundGrid) != -1;
+    if (on && !present) {
+        // after the camera and the gradient, before the background nodes of view providers
+        const int index = backgroundroot->findChild(pcBackGround) != -1 ? 2 : 1;
+        backgroundroot->insertChild(pcBackgroundGrid, index);
+    }
+    else if (!on && present) {
+        backgroundroot->removeChild(pcBackgroundGrid);
+    }
+    getSoRenderManager()->scheduleRedraw();
+}
+
+bool View3DInventorViewer::hasBackgroundGrid() const
+{
+    return backgroundroot->findChild(pcBackgroundGrid) != -1;
+}
+
+void View3DInventorViewer::setBackgroundGridColors(const SbColor& minorColor, const SbColor& majorColor)
+{
+    pcBackgroundGrid->setColors(minorColor, majorColor);
+    getSoRenderManager()->scheduleRedraw();
+}
+
+void View3DInventorViewer::setBackgroundGridOpacity(float opacity)
+{
+    pcBackgroundGrid->setOpacity(opacity);
+    getSoRenderManager()->scheduleRedraw();
+}
+
+void View3DInventorViewer::setBackgroundGridSpacing(float minimumPixels, int majorEvery)
+{
+    pcBackgroundGrid->setMinimumSpacing(minimumPixels);
+    pcBackgroundGrid->setMajorEvery(majorEvery);
+    getSoRenderManager()->scheduleRedraw();
 }
 
 void View3DInventorViewer::setEnabledFPSCounter(bool on)
@@ -2397,6 +2442,7 @@ void View3DInventorViewer::renderToFramebuffer(QOpenGLFramebufferObject* fbo)
         SoOverrideElement::setLightModelOverride(gl.getState(), selectionRoot, true);
     }
 
+    pcBackgroundGrid->setSceneCamera(getSoRenderManager()->getCamera());
     gl.apply(this->backgroundroot);
     // The render action of the render manager has set the depth function to GL_LESS
     // while creating a new render action has it set to GL_LEQUAL. So, in order to get
@@ -2545,6 +2591,7 @@ void View3DInventorViewer::renderScene()
         SoGLRenderActionElement::set(state, glra);
         SoGLVBOActivatedElement::set(state, this->vboEnabled);
         drawSingleBackground(col);
+        pcBackgroundGrid->setSceneCamera(getSoRenderManager()->getCamera());
         glra->apply(this->backgroundroot);
     }
 

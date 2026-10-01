@@ -73,6 +73,7 @@ SET(StartGuiThumbnail_PNG
         Resources/thumbnails/Theme_thumbnail_classic.png
         Resources/thumbnails/Theme_thumbnail_dark.png
         Resources/thumbnails/Theme_thumbnail_light.png
+        Resources/thumbnails/Theme_thumbnail_modern.png
         )
 
 # Add CoreFoundation to StartGui_LIBS on macOS

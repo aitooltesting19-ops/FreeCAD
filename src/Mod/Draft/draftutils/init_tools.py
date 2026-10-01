@@ -203,6 +203,148 @@ def get_draft_context_commands():
     ]
 
 
+def get_draft_command_panel_tabs():
+    """Return the tabs of the bottom command panel of the modern UI.
+
+    A list of (tab name, command list) tuples. The commands are the regular
+    registered Draft (and a few Std/Part) commands, so the panel buttons run
+    exactly the same code as the toolbars and menus. "Separator" groups buttons.
+    """
+    return [
+        (
+            QT_TRANSLATE_NOOP("Workbench", "Creation"),
+            [
+                "Draft_Line",
+                "Draft_Wire",
+                "Draft_Rectangle",
+                "Draft_Arc",
+                "Draft_Arc_3Points",
+                "Draft_Circle",
+                "Draft_Ellipse",
+                "Draft_Polygon",
+                "Separator",
+                "Draft_BSpline",
+                "Draft_CubicBezCurve",
+                "Draft_BezCurve",
+                "Separator",
+                "Draft_Point",
+                "Draft_Facebinder",
+                "Draft_ShapeString",
+                "Draft_Hatch",
+                "Separator",
+                "Draft_ToggleConstructionMode",
+            ],
+        ),
+        (
+            QT_TRANSLATE_NOOP("Workbench", "Modification"),
+            [
+                "Draft_Move",
+                "Draft_Rotate",
+                "Draft_Scale",
+                "Draft_Mirror",
+                "Draft_Offset",
+                "Draft_Trimex",
+                "Draft_Stretch",
+                "Draft_Fillet",
+                "Separator",
+                "Draft_Join",
+                "Draft_Split",
+                "Draft_Upgrade",
+                "Draft_Downgrade",
+                "Separator",
+                "Draft_Clone",
+                "Draft_ArrayTools",
+                "Separator",
+                "Draft_Edit",
+                "Draft_SubelementHighlight",
+                "Draft_WireToBSpline",
+                "Draft_Draft2Sketch",
+                "Draft_Slope",
+                "Draft_Shape2DView",
+            ],
+        ),
+        (
+            QT_TRANSLATE_NOOP("Workbench", "Annotation"),
+            [
+                "Draft_Text",
+                "Draft_Dimension",
+                "Draft_Label",
+                "Separator",
+                "Draft_FlipDimension",
+                "Draft_AnnotationStyleEditor",
+            ],
+        ),
+        (
+            QT_TRANSLATE_NOOP("Workbench", "Utility"),
+            [
+                "Std_Measure",
+                "Part_CheckGeometry",
+                "Separator",
+                "Part_ExplodeCompound",
+                "Draft_Join",
+                "Part_RefineShape",
+                "Draft_Heal",
+                "Separator",
+                "Draft_SetStyle",
+                "Draft_LayerManager",
+                "Std_UnitsCalculator",
+                "Std_ProjectInfo",
+                "Separator",
+                "Std_Export",
+                "Std_Import",
+                "Separator",
+                "Draft_AddNamedGroup",
+                "Draft_AddToLayer",
+                "Draft_AddConstruction",
+                "Draft_SelectPlane",
+                "Draft_ToggleGrid",
+                "Draft_ToggleDisplayMode",
+            ],
+        ),
+    ]
+
+
+def init_command_panel(workbench, tabs=None):
+    """Declare the tabs of the bottom command panel (modern UI) for a workbench.
+
+    Parameters
+    ----------
+    workbench: Gui.Workbench
+        The workbench. Commands that are not registered are skipped by the panel.
+
+    tabs: list of (str, list of str), optional
+        Defaults to get_draft_command_panel_tabs().
+    """
+    if not hasattr(workbench, "appendCommandPanel"):
+        return  # FreeCAD without the modern UI layer
+    try:
+        # The Utility tab uses a few Part commands (check geometry, explode, refine)
+        import PartGui  # noqa: F401
+    except ImportError:
+        pass
+    if tabs is None:
+        tabs = get_draft_command_panel_tabs()
+    for name, cmds in tabs:
+        workbench.appendCommandPanel(name, cmds)
+
+
+def hide_toolbars_shown_in_command_panel(toolbars):
+    """Hide toolbars whose commands are also in the bottom command panel.
+
+    Only done once, while the user has not chosen a visibility for these
+    toolbars yet, so View > Toolbars keeps full control afterwards.
+    """
+    import FreeCAD
+
+    modern = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/ModernUI")
+    if not modern.GetBool("Enabled", True) or not modern.GetBool("CommandPanelVisible", True):
+        return
+    params = FreeCAD.ParamGet("User parameter:BaseApp/MainWindow/Toolbars")
+    for name in toolbars:
+        if name not in params.GetBools():
+            params.SetBool(name, False)
+
+
 def init_toolbar(workbench, toolbar, cmd_list):
     """Initialize a toolbar.
 

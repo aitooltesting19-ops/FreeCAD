@@ -557,8 +557,18 @@ private Q_SLOTS:
     void itemSearch(const QString& text);
 
 private:
+    void setupFilterBox();
+    void applyFilter();
+    void clearFilter();
+    void onFilterAccepted();
+
+private:
     QLineEdit* searchBox;
     TreeWidget* treeWidget;
+    // "Search in model..." field of the modern UI (null when the modern UI is disabled)
+    QLineEdit* filterBox {nullptr};
+    QAction* filterModeAction {nullptr};
+    QTimer* filterTimer {nullptr};
 };
 
 /**

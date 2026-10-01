@@ -94,6 +94,7 @@ namespace Gui
 class NavigationAnimation;
 class ViewProvider;
 class SoFCBackgroundGradient;
+class SoFCBackgroundGrid;
 class NavigationStyle;
 class SoFCUnifiedSelection;
 class Document;
@@ -485,6 +486,12 @@ public:
         const SbColor& toColor,
         const SbColor& midColor
     );
+    /// Shows or hides the engineering grid drawn behind the scene (visual only, no snapping)
+    void setBackgroundGrid(bool on);
+    bool hasBackgroundGrid() const;
+    void setBackgroundGridColors(const SbColor& minorColor, const SbColor& majorColor);
+    void setBackgroundGridOpacity(float opacity);
+    void setBackgroundGridSpacing(float minimumPixels, int majorEvery);
     void setNavigationType(Base::Type);
 
     void setAxisLetterColor(const SbColor& color);
@@ -563,6 +570,7 @@ private:
     std::list<GLGraphicsItem*> graphicsItems;
     ViewProvider* editViewProvider;
     SoFCBackgroundGradient* pcBackGround;
+    SoFCBackgroundGrid* pcBackgroundGrid;
     SoSeparator* backgroundroot;
     SoSeparator* foregroundroot;
 
