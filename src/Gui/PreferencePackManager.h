@@ -112,6 +112,13 @@ public:
     bool apply(const std::string& preferencePackName) const;
 
     /**
+     * Apply only the settings of the named preferencePack, without refreshing dock windows
+     * and toolbars. For use during startup, before the main window exists.
+     * \return True if the preferencePack was applied, or false if it was not
+     */
+    bool applySettingsOnly(const std::string& preferencePackName) const;
+
+    /**
      * Check the visibility of the specified pack
      * \return True if the preferencePack is visible, or false if not. All packs are visible by
      * default, but can be marked as "invisible" (i.e. not returned by the manager in lists of

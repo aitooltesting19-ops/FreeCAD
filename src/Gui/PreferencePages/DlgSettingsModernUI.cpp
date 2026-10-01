@@ -43,7 +43,7 @@ using Gui::ModernUI::WorkspaceAppearance;
 namespace
 {
 // Tree row spacing written to TreeView/ItemSpacing for the two densities
-constexpr long compactSpacing = 2;
+constexpr long compactSpacing = 0;  // FreeCAD's default
 constexpr long comfortableSpacing = 8;
 
 QColor fromPacked(std::uint32_t packed)
@@ -63,7 +63,7 @@ DlgSettingsModernUI::DlgSettingsModernUI(QWidget* parent)
     interfaceGroup = new QGroupBox(this);
     auto interfaceForm = new QFormLayout(interfaceGroup);
     enabled = new PrefCheckBox(interfaceGroup);
-    enabled->setChecked(true);
+    enabled->setChecked(false);
     enabled->setEntryName("Enabled");
     enabled->setParamGrpPath("ModernUI");
     interfaceForm->addRow(enabled);
@@ -162,8 +162,14 @@ DlgSettingsModernUI::DlgSettingsModernUI(QWidget* parent)
     };
 
     connect(preset, qOverload<int>(&QComboBox::activated), this, &DlgSettingsModernUI::onPresetActivated);
-    connect(enabled, &QCheckBox::toggled, this, [this]() { requireRestart(); });
-    connect(modernIcons, &QCheckBox::toggled, this, [this]() { requireRestart(); });
+    // Only the icon set needs a restart; the rest follows the settings right away.
+    // "clicked" (not "toggled"), so that loading the stored values does not ask for a restart.
+    connect(enabled, &QCheckBox::clicked, this, [this]() {
+        if (modernIcons->isChecked()) {
+            requireRestart();
+        }
+    });
+    connect(modernIcons, &QCheckBox::clicked, this, [this]() { requireRestart(); });
 
     retranslateUi();
 }
@@ -194,11 +200,16 @@ void DlgSettingsModernUI::saveSettings()
         widget->onSave();
     }
 
-    const bool comfortable = density->currentIndex() == 1;
-    ModernUI::parameters()->SetInt("TreeDensity", comfortable ? 1 : 0);
-    App::GetApplication()
-        .GetParameterGroupByPath("User parameter:BaseApp/Preferences/TreeView")
-        ->SetInt("ItemSpacing", comfortable ? comfortableSpacing : compactSpacing);
+    // Only touch the tree spacing when the density was changed here, so that saving the
+    // preferences for another reason keeps a custom TreeView/ItemSpacing value.
+    if (density->currentIndex() != loadedDensity) {
+        const bool comfortable = density->currentIndex() == 1;
+        ModernUI::parameters()->SetInt("TreeDensity", comfortable ? 1 : 0);
+        App::GetApplication()
+            .GetParameterGroupByPath("User parameter:BaseApp/Preferences/TreeView")
+            ->SetInt("ItemSpacing", comfortable ? comfortableSpacing : compactSpacing);
+        loadedDensity = density->currentIndex();
+    }
 }
 
 void DlgSettingsModernUI::loadSettings()
@@ -213,6 +224,7 @@ void DlgSettingsModernUI::loadSettings()
     density->setCurrentIndex(
         int(ModernUI::parameters()->GetInt("TreeDensity", spacingValue >= comfortableSpacing ? 1 : 0))
     );
+    loadedDensity = density->currentIndex();
 
     const int index = preset->findData(WorkspaceAppearance::currentPreset());
     preset->setCurrentIndex(index);
@@ -255,7 +267,7 @@ void DlgSettingsModernUI::retranslateUi()
     majorEveryLabel->setText(tr("Major line every"));
     majorEvery->setSuffix(tr(" minor lines"));
     restartNote->setText(
-        tr("Turning the modern interface or the modern icons on or off takes effect after a restart. "
+        tr("Switching the modern icon set on or off takes effect after a restart. "
            "The theme itself is selected under Display > UI (\"FreeCAD Modern\").")
     );
 }

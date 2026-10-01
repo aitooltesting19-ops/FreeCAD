@@ -395,6 +395,17 @@ bool PreferencePackManager::apply(const std::string& preferencePackName) const
     }
 }
 
+bool PreferencePackManager::applySettingsOnly(const std::string& preferencePackName) const
+{
+    std::lock_guard<std::mutex> lock(_mutex);
+    auto preferencePack = _preferencePacks.find(preferencePackName);
+    if (preferencePack == _preferencePacks.end()) {
+        return false;
+    }
+    BackupCurrentConfig();
+    return preferencePack->second.apply();
+}
+
 static std::string findUnusedName(const std::string& basename, ParameterGrp::handle parent)
 {
     int i = 1;

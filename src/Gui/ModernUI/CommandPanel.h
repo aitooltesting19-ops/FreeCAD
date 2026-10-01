@@ -24,6 +24,8 @@
 #ifndef GUI_MODERNUI_COMMANDPANEL_H
 #define GUI_MODERNUI_COMMANDPANEL_H
 
+#include <memory>
+
 #include <QHash>
 #include <QPointer>
 #include <QToolButton>
@@ -109,6 +111,7 @@ public:
 protected:
     bool eventFilter(QObject* object, QEvent* event) override;
     void changeEvent(QEvent* event) override;
+    void showEvent(QShowEvent* event) override;
 
 private:
     QWidget* createPage(const ToolBarItem* tab);
@@ -148,12 +151,19 @@ public:
 
 private:
     CommandPanelManager();
+    ~CommandPanelManager();
     void createDockWidget();
     void updateVisibility();
+    void updateCorners(bool fullWidth);
+    void onParameterChanged(const QByteArray& name);
 
     QPointer<QDockWidget> dock;
     QPointer<CommandPanel> commandPanel;
+    std::unique_ptr<ToolBarItem> content;  // copy of the active workbench's panel structure
     bool hasContent {false};
+    bool cornersChanged {false};
+    Qt::DockWidgetArea savedBottomLeft {Qt::BottomDockWidgetArea};
+    Qt::DockWidgetArea savedBottomRight {Qt::BottomDockWidgetArea};
     static CommandPanelManager* _instance;
 };
 

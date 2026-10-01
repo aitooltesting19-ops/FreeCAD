@@ -57,12 +57,14 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
     void focusOutEvent(QFocusEvent* event) override;
     void changeEvent(QEvent* event) override;
 
 private:
     void onCommandActivated(const QByteArray& name);
     void retranslate();
+    void updateHintMargin();
     QString shortcutText() const;
 
     CommandCompleter* completer;

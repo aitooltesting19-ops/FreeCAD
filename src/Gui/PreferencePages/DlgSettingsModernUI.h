@@ -88,6 +88,7 @@ private:
     QLabel* restartNote;
     QList<PrefWidget*> prefWidgets;
     QByteArray pendingPreset;
+    int loadedDensity {-1};
 };
 
 }  // namespace Dialog

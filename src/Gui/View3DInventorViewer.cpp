@@ -1815,10 +1815,12 @@ void View3DInventorViewer::savePicture(int width, int height, int sample, const 
     // for an invalid color use the viewer's current background color
     QColor bgColor;
     if (!bg.isValid()) {
-        if (backgroundroot->findChild(pcBackGround) == -1) {
+        const bool hasGradient = backgroundroot->findChild(pcBackGround) != -1;
+        if (!hasGradient) {
             bgColor = this->backgroundColor();
         }
-        else {
+        // the background graph also holds the engineering grid, which belongs to the view
+        if (hasGradient || hasBackgroundGrid()) {
             useBackground = true;
             cb = new SoCallback;
             cb->setCallback(clearBufferCB);

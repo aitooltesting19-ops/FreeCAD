@@ -49,8 +49,8 @@ CommandSearchBox::CommandSearchBox(QWidget* parent)
     setObjectName(QStringLiteral("CommandSearchBox"));
     setClearButtonEnabled(true);
     addAction(BitmapFactory().iconFromTheme("ModernUI_Search"), QLineEdit::LeadingPosition);
-    setMinimumWidth(200);
-    setMaximumWidth(280);
+    setMinimumWidth(240);
+    setMaximumWidth(300);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
 
     completer = new CommandCompleter(this, this);
@@ -63,6 +63,7 @@ CommandSearchBox::CommandSearchBox(QWidget* parent)
         &QLineEdit::setText
     );
     connect(completer, &CommandCompleter::commandActivated, this, &CommandSearchBox::onCommandActivated);
+    connect(this, &QLineEdit::textChanged, this, &CommandSearchBox::updateHintMargin);
 
     retranslate();
 }
@@ -128,6 +129,7 @@ void CommandSearchBox::retranslate()
 {
     setPlaceholderText(tr("Search commands..."));
     setToolTip(tr("Search all commands by name, menu text or tool tip, and run the selected one"));
+    updateHintMargin();
 }
 
 void CommandSearchBox::paintEvent(QPaintEvent* event)
@@ -164,10 +166,29 @@ void CommandSearchBox::keyPressEvent(QKeyEvent* event)
     QLineEdit::keyPressEvent(event);
 }
 
+void CommandSearchBox::focusInEvent(QFocusEvent* event)
+{
+    QLineEdit::focusInEvent(event);
+    updateHintMargin();
+}
+
 void CommandSearchBox::focusOutEvent(QFocusEvent* event)
 {
     QLineEdit::focusOutEvent(event);
+    updateHintMargin();
     update();
+}
+
+void CommandSearchBox::updateHintMargin()
+{
+    // Reserve room for the shortcut hint, so that the placeholder text does not run into it
+    const bool idle = !hasFocus() && text().isEmpty();
+    const QString hint = idle ? shortcutText() : QString();
+    const int right = hint.isEmpty() ? 0 : fontMetrics().horizontalAdvance(hint) + 10;
+    const QMargins margins = textMargins();
+    if (margins.right() != right) {
+        setTextMargins(margins.left(), margins.top(), right, margins.bottom());
+    }
 }
 
 void CommandSearchBox::changeEvent(QEvent* event)

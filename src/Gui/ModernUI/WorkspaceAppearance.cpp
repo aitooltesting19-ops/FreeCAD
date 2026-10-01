@@ -45,7 +45,7 @@ const std::vector<WorkspacePreset>& WorkspaceAppearance::presets()
         {"LightGray",       QT_TRANSLATE_NOOP("WorkspaceAppearance", "Light Gray"),
          0xEEF1F4FF, false, false, 0xE1E6EBFF, 0xD0D7DFFF},
         {"Dark",            QT_TRANSLATE_NOOP("WorkspaceAppearance", "Dark"),
-         0x1E232BFF, false, true,  0x262D37FF, 0x313B48FF},
+         0x1E232BFF, false, true,  0x2B3440FF, 0x3B4758FF},
         {"Legacy",          QT_TRANSLATE_NOOP("WorkspaceAppearance", "Legacy FreeCAD"),
          0x141414FF, true,  false, 0xD8EAF8FF, 0xC3DDF1FF},
     };

@@ -71,7 +71,8 @@ protected:
 
     bool isActive() override
     {
-        return CommandSearchBox::instance() != nullptr;
+        CommandSearchBox* box = CommandSearchBox::instance();
+        return box && !box->isHidden();
     }
 };
 
@@ -196,9 +197,11 @@ protected:
         return pcAction;
     }
 
-    void activated(int) override
+    void activated(int iMsg) override
     {
-        ModernUI::WorkspaceAppearance::setGridVisible(!ModernUI::WorkspaceAppearance::isGridVisible());
+        // Checkable command: iMsg is the new check state. Setting (not toggling) it keeps the
+        // check mark synchronization in isActive() from switching the grid back.
+        ModernUI::WorkspaceAppearance::setGridVisible(iMsg != 0);
     }
 
     bool isActive() override

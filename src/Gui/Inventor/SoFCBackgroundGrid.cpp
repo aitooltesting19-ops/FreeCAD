@@ -21,6 +21,8 @@
  *                                                                          *
  ***************************************************************************/
 
+#include <FCConfig.h>
+
 #ifdef FC_OS_WIN32
 # include <windows.h>
 #endif
@@ -138,7 +140,13 @@ void SoFCBackgroundGrid::GLRender(SoGLRenderAction* action)
     }
 
     // Corners of the viewport on the focal plane of the scene camera, in world coordinates
-    const SbViewVolume vv = camera->getViewVolume(vp.getViewportAspectRatio());
+    // Same view volume as the camera renders with, including Coin's ADJUST_CAMERA mapping
+    // that widens the volume of tall, narrow viewports
+    const float aspect = vp.getViewportAspectRatio();
+    SbViewVolume vv = camera->getViewVolume(aspect);
+    if (aspect < 1.0F && camera->viewportMapping.getValue() == SoCamera::ADJUST_CAMERA) {
+        vv.scale(1.0F / aspect);
+    }
     const float distance = camera->focalDistance.getValue();
     const SbVec3f origin = vv.getPlanePoint(distance, SbVec2f(0.0F, 0.0F));
     SbVec3f right = vv.getPlanePoint(distance, SbVec2f(1.0F, 0.0F)) - origin;

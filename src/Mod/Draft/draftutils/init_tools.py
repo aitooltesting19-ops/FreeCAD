@@ -328,21 +328,40 @@ def init_command_panel(workbench, tabs=None):
         workbench.appendCommandPanel(name, cmds)
 
 
-def hide_toolbars_shown_in_command_panel(toolbars):
-    """Hide toolbars whose commands are also in the bottom command panel.
+# Draft toolbars whose commands are all in the bottom command panel
+DRAFT_COMMAND_PANEL_TOOLBARS = [
+    "Draft Creation",
+    "Draft Annotation",
+    "Draft Modification",
+    "Draft Utility",
+]
 
-    Only done once, while the user has not chosen a visibility for these
-    toolbars yet, so View > Toolbars keeps full control afterwards.
+
+def sync_toolbars_with_command_panel(toolbars=None):
+    """Hide or restore the toolbars whose commands are also in the command panel.
+
+    While the modern UI shows the command panel, the toolbars that duplicate it
+    are hidden once. The names hidden this way are remembered, so they are shown
+    again when the modern UI or the panel is switched off. A toolbar the user
+    shows again through View > Toolbars is left alone.
     """
     import FreeCAD
 
+    if toolbars is None:
+        toolbars = DRAFT_COMMAND_PANEL_TOOLBARS
     modern = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/ModernUI")
-    if not modern.GetBool("Enabled", True) or not modern.GetBool("CommandPanelVisible", True):
-        return
     params = FreeCAD.ParamGet("User parameter:BaseApp/MainWindow/Toolbars")
+    hidden = [n for n in modern.GetString("HiddenToolbars", "").split(";") if n]
+    panel_shown = modern.GetBool("Enabled", False) and modern.GetBool("CommandPanelVisible", True)
     for name in toolbars:
-        if name not in params.GetBools():
-            params.SetBool(name, False)
+        if panel_shown and name not in hidden:
+            if params.GetBool(name, True):
+                params.SetBool(name, False)
+                hidden.append(name)
+        elif not panel_shown and name in hidden:
+            params.SetBool(name, True)
+            hidden.remove(name)
+    modern.SetString("HiddenToolbars", ";".join(hidden))
 
 
 def init_toolbar(workbench, toolbar, cmd_list):

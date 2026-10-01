@@ -126,9 +126,7 @@ class DraftWorkbench(FreeCADGui.Workbench):
 
         # Bottom command panel of the modern UI: Creation, Modification, Annotation, Utility
         it.init_command_panel(self)
-        it.hide_toolbars_shown_in_command_panel(
-            ["Draft Creation", "Draft Annotation", "Draft Modification", "Draft Utility"]
-        )
+        it.sync_toolbars_with_command_panel()
 
         # Set up menus
         it.init_menu(self, [QT_TRANSLATE_NOOP("Workbench", "&Drafting")], self.drawing_commands)
@@ -171,6 +169,9 @@ class DraftWorkbench(FreeCADGui.Workbench):
 
     def Activated(self):
         """When entering the workbench."""
+        import draftutils.init_tools as it
+
+        it.sync_toolbars_with_command_panel()
         if hasattr(FreeCADGui, "draftToolBar"):
             FreeCADGui.draftToolBar.Activated()
         if hasattr(FreeCADGui, "Snapper"):

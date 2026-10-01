@@ -892,12 +892,20 @@ QStatusBar QLabel {
   padding: 0px 6px;
 }
 
-QStatusBar QPushButton,
-QStatusBar QToolButton {
+QStatusBar QPushButton {
   background-color: transparent;
   border: 1px solid transparent;
   border-radius: @ModernRadiusSmall;
   padding: 1px 6px;
+}
+
+/* tool buttons keep their own size, so the icons of status bar tool bars are not squeezed */
+QStatusBar QToolButton,
+QStatusBar QToolBar QToolButton {
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: @ModernRadiusSmall;
+  padding: 0px;
 }
 
 QStatusBar QPushButton:hover,

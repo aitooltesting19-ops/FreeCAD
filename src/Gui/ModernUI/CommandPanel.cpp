@@ -37,6 +37,7 @@
 #include <QStackedWidget>
 #include <QStyleOptionToolButton>
 #include <QTabBar>
+#include <QTimer>
 #include <QVBoxLayout>
 #include <QWheelEvent>
 
@@ -489,8 +490,16 @@ void CommandPanel::changeEvent(QEvent* event)
 {
     if (event->type() == QEvent::FontChange || event->type() == QEvent::StyleChange) {
         updateHeight();
+        // The header's children get their new style after this widget; measure again then
+        QTimer::singleShot(0, this, &CommandPanel::updateHeight);
     }
     QWidget::changeEvent(event);
+}
+
+void CommandPanel::showEvent(QShowEvent* event)
+{
+    QWidget::showEvent(event);
+    updateHeight();
 }
 
 // ----------------------------------------------------------------------------
@@ -511,7 +520,60 @@ void CommandPanelManager::destruct()
     _instance = nullptr;
 }
 
-CommandPanelManager::CommandPanelManager() = default;
+CommandPanelManager::CommandPanelManager()
+{
+    static bool connected = false;
+    if (connected) {
+        return;
+    }
+    connected = true;
+    QObject::connect(
+        ModernUI::Settings::instance(),
+        &ModernUI::Settings::parameterChanged,
+        [](const QByteArray& name) {
+            if (_instance) {
+                _instance->onParameterChanged(name);
+            }
+        }
+    );
+}
+
+CommandPanelManager::~CommandPanelManager() = default;
+
+void CommandPanelManager::onParameterChanged(const QByteArray& name)
+{
+    if (name == "Enabled") {
+        // Rebuild from the stored structure of the active workbench
+        std::unique_ptr<ToolBarItem> root(content ? content->copy() : nullptr);
+        setup(root.get());
+    }
+    else if (name == "CommandPanelVisible") {
+        updateVisibility();
+    }
+    else if (name == "CommandPanelCollapsed" && commandPanel) {
+        commandPanel->setCollapsed(ModernUI::parameters()->GetBool("CommandPanelCollapsed", false));
+    }
+}
+
+void CommandPanelManager::updateCorners(bool fullWidth)
+{
+    MainWindow* mw = getMainWindow();
+    if (!mw || fullWidth == cornersChanged) {
+        return;
+    }
+    if (fullWidth) {
+        // Let the panel span the full width of the window, below the side panels
+        savedBottomLeft = mw->corner(Qt::BottomLeftCorner);
+        savedBottomRight = mw->corner(Qt::BottomRightCorner);
+        mw->setCorner(Qt::BottomLeftCorner, Qt::BottomDockWidgetArea);
+        mw->setCorner(Qt::BottomRightCorner, Qt::BottomDockWidgetArea);
+    }
+    else {
+        mw->setCorner(Qt::BottomLeftCorner, savedBottomLeft);
+        mw->setCorner(Qt::BottomRightCorner, savedBottomRight);
+    }
+    cornersChanged = fullWidth;
+}
 
 void CommandPanelManager::createDockWidget()
 {
@@ -530,10 +592,9 @@ void CommandPanelManager::createDockWidget()
     commandPanel = new CommandPanel(dock);
     dock->setWidget(commandPanel);
 
-    // Let the panel span the full width of the window, below the side panels
-    mw->setCorner(Qt::BottomLeftCorner, Qt::BottomDockWidgetArea);
-    mw->setCorner(Qt::BottomRightCorner, Qt::BottomDockWidgetArea);
-    mw->addDockWidget(Qt::BottomDockWidgetArea, dock);
+    // Stack it under other bottom docks (report view, Python console) instead of beside them,
+    // otherwise its fixed height would limit the height of the whole bottom row.
+    mw->addDockWidget(Qt::BottomDockWidgetArea, dock, Qt::Vertical);
     mw->restoreDockWidget(dock);
 
     // Only an explicit toggle by the user (View > Panels) changes the stored visibility;
@@ -546,7 +607,8 @@ void CommandPanelManager::createDockWidget()
 
 void CommandPanelManager::setup(const ToolBarItem* root)
 {
-    const bool enabled = ModernUI::parameters()->GetBool("Enabled", true);
+    content.reset(root ? root->copy() : nullptr);
+    const bool enabled = ModernUI::isEnabled();
     hasContent = enabled && root && root->hasItems();
     if (hasContent) {
         createDockWidget();
@@ -565,6 +627,7 @@ void CommandPanelManager::updateVisibility()
     const bool visible = ModernUI::parameters()->GetBool("CommandPanelVisible", true);
     dock->toggleViewAction()->setVisible(hasContent);
     dock->setVisible(hasContent && visible);
+    updateCorners(ModernUI::isEnabled());
 }
 
 void CommandPanelManager::retranslate()

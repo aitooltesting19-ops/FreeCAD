@@ -58,6 +58,7 @@
 #include <App/Link.h>
 
 #include "Tree.h"
+#include "ModernUI/ModernUI.h"
 #include "BitmapFactory.h"
 #include "Command.h"
 #include "Document.h"
@@ -4205,13 +4206,7 @@ constexpr int FilterHiddenRole = Qt::UserRole + 1000;
 
 void TreePanel::setupFilterBox()
 {
-    auto hModern = App::GetApplication().GetParameterGroupByPath(
-        "User parameter:BaseApp/Preferences/ModernUI"
-    );
-    if (!hModern->GetBool("Enabled", true)) {
-        return;
-    }
-
+    auto hModern = ModernUI::parameters();
     filterBox = new QLineEdit(this);
     filterBox->setObjectName(QStringLiteral("TreeSearchBox"));
     filterBox->setPlaceholderText(tr("Search in model..."));
@@ -4258,6 +4253,15 @@ void TreePanel::setupFilterBox()
     filterBox->installEventFilter(this);
 
     layout()->addWidget(filterBox);
+
+    // Only shown with the modern UI, and follows the preference without a restart
+    filterBox->setVisible(ModernUI::isEnabled());
+    connect(ModernUI::Settings::instance(), &ModernUI::Settings::enabledChanged, this, [this](bool on) {
+        if (!on) {
+            filterBox->clear();
+        }
+        filterBox->setVisible(on);
+    });
 }
 
 void TreePanel::clearFilter()

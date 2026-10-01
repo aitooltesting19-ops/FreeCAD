@@ -131,15 +131,34 @@ void StartupProcess::execute()
     setImagePaths();
     registerEventType();
     setThemePaths();
+    applyDefaultTheme();
     setModernIcons();
     setupFileDialog();
+}
+
+void StartupProcess::applyDefaultTheme()
+{
+    // A new user profile (no theme chosen yet, no branding theme) starts with the modern
+    // interface. Existing profiles keep the theme and layout they have. This runs before the
+    // GUI application is created, so the style sheet, its theme tokens and the icons are set
+    // up with the new settings right away.
+    ParameterGrp::handle hGrp = App::GetApplication().GetParameterGroupByPath(
+        "User parameter:BaseApp/Preferences/MainWindow"
+    );
+    const char* unset = "<unset>";
+    const auto& config = App::Application::Config();
+    if (hGrp->GetASCII("StyleSheet", unset) != unset || config.find("StyleSheet") != config.end()) {
+        return;
+    }
+    PreferencePackManager packs;
+    packs.applySettingsOnly("FreeCAD Modern");
 }
 
 void StartupProcess::setModernIcons()
 {
     // Must happen before any icon is loaded, so that the modern variants take precedence
     ParameterGrp::handle hGrp = ModernUI::parameters();
-    if (hGrp->GetBool("Enabled", true) && hGrp->GetBool("ModernIcons", true)) {
+    if (ModernUI::isEnabled() && hGrp->GetBool("ModernIcons", true)) {
         ModernUI::installModernIcons();
     }
 }

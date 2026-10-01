@@ -33,6 +33,7 @@
 #include "../BitmapFactory.h"
 #include "../Command.h"
 #include "CommandSearch.h"
+#include "../ToolBarManager.h"
 
 using namespace Gui;
 
@@ -41,6 +42,38 @@ ParameterGrp::handle ModernUI::parameters()
     return App::GetApplication().GetParameterGroupByPath(
         "User parameter:BaseApp/Preferences/ModernUI"
     );
+}
+
+bool ModernUI::isEnabled()
+{
+    return parameters()->GetBool("Enabled", false);
+}
+
+ModernUI::Settings::Settings()
+{
+    ParameterGrp::handle group = parameters();  // groups live as long as the parameter manager
+    connParam = App::GetApplication().GetUserParameter().signalParamChanged.connect(
+        [this, group](ParameterGrp* hParam, ParameterGrp::ParamType, const char* name, const char*) {
+            if (hParam != static_cast<ParameterGrp*>(group) || !name) {
+                return;
+            }
+            const QByteArray key(name);
+            // Queued, so that receivers never run inside the parameter manager's notification
+            QMetaObject::invokeMethod(this, [this, key]() {
+                Q_EMIT parameterChanged(key);
+                if (key == "Enabled") {
+                    Q_EMIT enabledChanged(isEnabled());
+                }
+            }, Qt::QueuedConnection);
+        }
+    );
+}
+
+ModernUI::Settings* ModernUI::Settings::instance()
+{
+    // Intentionally never deleted: it is only a relay and must outlive the widgets using it
+    static auto settings = new Settings();
+    return settings;
 }
 
 QString ModernUI::commandLabel(const Command* cmd)
@@ -100,11 +133,26 @@ void ModernUI::installModernIcons()
 
 void ModernUI::setupMainWindow()
 {
-    ParameterGrp::handle hGrp = parameters();
-    if (!hGrp->GetBool("Enabled", true)) {
-        return;
-    }
-    if (hGrp->GetBool("CommandSearch", true)) {
-        CommandSearchBox::install();
-    }
+    // The tool bar manager owns the menu bar corner areas; create it first so that the search
+    // field wraps its corner area instead of being replaced by it later.
+    (void)ToolBarManager::getInstance();
+
+    const auto update = []() {
+        const bool show = isEnabled() && parameters()->GetBool("CommandSearch", true);
+        CommandSearchBox* box = CommandSearchBox::instance();
+        if (show && !box) {
+            box = CommandSearchBox::install();
+        }
+        if (box) {
+            box->setVisible(show);
+        }
+    };
+    update();
+    QObject::connect(Settings::instance(), &Settings::parameterChanged, [update](const QByteArray& name) {
+        if (name == "Enabled" || name == "CommandSearch") {
+            update();
+        }
+    });
 }
+
+#include "moc_ModernUI.cpp"

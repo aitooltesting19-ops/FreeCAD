@@ -24,6 +24,7 @@
 #ifndef GUI_MODERNUI_MODERNUI_H
 #define GUI_MODERNUI_MODERNUI_H
 
+#include <QObject>
 #include <QString>
 
 #include <Base/Parameter.h>
@@ -47,6 +48,36 @@ namespace ModernUI
 
 /// Parameter group "BaseApp/Preferences/ModernUI" holding the modern UI settings
 GuiExport ParameterGrp::handle parameters();
+
+/**
+ * Whether the modern UI layer is switched on (parameter ModernUI/Enabled).
+ *
+ * Off by default, so existing setups keep their look and layout; the "FreeCAD Modern"
+ * preference pack switches it on.
+ */
+GuiExport bool isEnabled();
+
+/**
+ * Reports changes of the ModernUI parameters, so that the command panel, the command search
+ * and the tree search field follow the preferences (or a preference pack) without a restart.
+ */
+class GuiExport Settings: public QObject
+{
+    Q_OBJECT
+
+public:
+    static Settings* instance();
+
+Q_SIGNALS:
+    /// Emitted when ModernUI/Enabled changes
+    void enabledChanged(bool enabled);
+    /// Emitted for any parameter of the ModernUI group, with its name
+    void parameterChanged(const QByteArray& name);
+
+private:
+    Settings();
+    boost::signals2::scoped_connection connParam;
+};
 
 /// Short, user facing label of a command, suitable for a button with the text under the icon
 GuiExport QString commandLabel(const Command* cmd);

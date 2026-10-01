@@ -49,6 +49,7 @@ private:
     void setImagePaths();
     void registerEventType();
     void setThemePaths();
+    void applyDefaultTheme();
     void setModernIcons();
     void setupFileDialog();
 };
