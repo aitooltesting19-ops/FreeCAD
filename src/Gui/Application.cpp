@@ -2775,7 +2775,7 @@ QString Application::resolveQssImports(const QString& qssText, int depth)
     // is searched like any style sheet. This lets a theme extend another one by overriding only
     // what it changes, e.g. "FreeCAD Modern.qss" builds on "FreeCAD.qss".
     static const QRegularExpression importRegex(
-        QString::fromLatin1(R"(^[ \t]*@import\s+"([^"]+)"\s*;[ \t]*$)"),
+        QString::fromLatin1("^[ \\t]*@import\\s+\"([^\"]+)\"\\s*;[ \\t]*$"),
         QRegularExpression::MultilineOption
     );
     constexpr int maxDepth = 4;
