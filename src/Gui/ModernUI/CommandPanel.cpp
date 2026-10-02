@@ -457,6 +457,12 @@ void CommandPanel::updateHeight()
 {
     // The panel has a fixed height: header only when collapsed, header plus one row of
     // buttons (and room for the horizontal scroll bar) when expanded.
+    //
+    // The header layout caches the tab bar's size hint. Since Qt 6.3 a tab bar that gets its
+    // tabs while hidden (setup() runs before the dock is shown) no longer reports the new hint
+    // when it is shown, so the layout keeps the hint of the empty bar and gives it a height of 0.
+    // Drop the cached hint before measuring.
+    tabBar->updateGeometry();
     int height = header->sizeHint().height();
     if (!collapsed) {
         const QFontMetrics fm(font());
