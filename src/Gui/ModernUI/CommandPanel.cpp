@@ -427,6 +427,9 @@ void CommandPanel::onCurrentChanged(int index)
         return;
     }
     stack->setCurrentIndex(index);
+    // Selected and unselected tabs use different font weights, so Qt 6 may resize the tabs
+    // when the selection changes without telling the header layout
+    tabBar->updateGeometry();
     if (!updating) {
         ModernUI::parameters()->SetASCII("CommandPanelTab", tabs[index].toStdString());
     }
